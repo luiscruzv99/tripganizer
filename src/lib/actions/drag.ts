@@ -5,8 +5,6 @@ interface DragOptions {
 export function draggable(node: HTMLElement, options: DragOptions = {}) {
 	let offsetX = 0;
 	let offsetY = 0;
-	let currentX = 0;
-	let currentY = 0;
 
 	function handleMousedown(event: MouseEvent) {
 		event.preventDefault();
@@ -19,12 +17,10 @@ export function draggable(node: HTMLElement, options: DragOptions = {}) {
 	}
 
 	function handleMousemove(event: MouseEvent) {
-		currentX = event.clientX - offsetX;
-		currentY = event.clientY - offsetY;
+		const x = event.clientX - offsetX;
+		const y = event.clientY - offsetY;
 
-		node.style.transform = `translate(${currentX}px, ${currentY}px)`;
-
-		options.onmove?.(currentX, currentY);
+		options.onmove?.(x, y);
 	}
 
 	function handleMouseup() {

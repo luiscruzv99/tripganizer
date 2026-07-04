@@ -13,8 +13,20 @@
 		{ id: '3', x: 600, y: 200 }
 	]);
 
+	let canvasEl: HTMLDivElement;
+
 	function handleCardMove(id: string, x: number, y: number) {
-		cards = cards.map((c) => (c.id === id ? { ...c, x, y } : c));
+		if (!canvasEl) return;
+		const canvasRect = canvasEl.getBoundingClientRect();
+		cards = cards.map((c) =>
+			c.id === id
+				? {
+						...c,
+						x: x - canvasRect.left + canvasEl.scrollLeft,
+						y: y - canvasRect.top + canvasEl.scrollTop
+					}
+				: c
+		);
 	}
 
 	function addCard() {
@@ -29,7 +41,7 @@
 	}
 </script>
 
-<div class="canvas">
+<div class="canvas" bind:this={canvasEl}>
 	<div class="canvas-inner">
 		{#each cards as card (card.id)}
 			<Card x={card.x} y={card.y} onmove={(x, y) => handleCardMove(card.id, x, y)} />
