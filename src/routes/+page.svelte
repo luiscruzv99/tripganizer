@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { SvelteFlow, MiniMap, type Node, type Edge } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
+	import { page } from '$app/state';
 	import Topbar from '$lib/components/Topbar.svelte';
 	import CardTypeSelector from '$lib/components/CardTypeSelector.svelte';
 	import CardFormModal from '$lib/components/CardFormModal.svelte';
@@ -17,6 +18,16 @@
 		removeYarnFromBoard,
 		findYarnForCard
 	} from '$lib/board';
+	import {
+		fetchBoard,
+		createBoardApi,
+		createCardApi,
+		deleteCardApi,
+		createYarnApi,
+		deleteYarnApi,
+		addCardToYarnApi,
+		syncPositionsApi
+	} from '$lib/api';
 	import type { Card, CardType } from '$lib/types';
 	import CardNode from '$lib/components/nodes/CardNode.svelte';
 	import YarnEdge from '$lib/components/edges/YarnEdge.svelte';
@@ -28,6 +39,11 @@
 	const edgeTypes = { yarn: YarnEdge };
 
 	let board = $state(loadBoard());
+	let boardId = $state<string | null>(
+		page.url.searchParams.get('board') ??
+			(typeof window !== 'undefined' ? localStorage.getItem('boardId') : null)
+	);
+	let dirty = $state(false);
 
 	function initNodes(): Node[] {
 		return board.cards
@@ -68,6 +84,65 @@
 	let pendingConnection = $state<{ source: string; target: string } | null>(null);
 	let existingYarnsForPending = $state<Yarn[]>([]);
 	let selectedEdgeId = $state<string | null>(null);
+
+	async function loadFromServer(id: string) {
+		try {
+			const serverBoard = await fetchBoard(id);
+			board = {
+				id: serverBoard.id,
+				name: serverBoard.name,
+				description: serverBoard.description ?? undefined,
+				created_date: serverBoard.created_date,
+				cards: (serverBoard.cards ?? []).map((c, i) => ({
+					id: c.id,
+					name: c.name,
+					type: c.type as CardType,
+					description: c.description ?? undefined,
+					external_link: c.external_link ?? undefined,
+					header_img: c.header_img ?? undefined,
+					price: c.price ?? undefined,
+					start_date: c.start_date ?? undefined,
+					end_date: c.end_date ?? undefined,
+					duration: c.duration ?? undefined,
+					x_pos: c.x_pos ?? 100 + i * 200,
+					y_pos: c.y_pos ?? 100 + i * 100,
+					deleted: c.deleted ?? false
+				})),
+				yarns: (serverBoard.yarns ?? []).map((y) => ({
+					id: y.id,
+					color: y.color,
+					free_field: y.free_field ?? undefined,
+					parent_card: y.parent_card_id
+						? ((serverBoard.cards ?? []).find((c) => c.id === y.parent_card_id) ?? undefined)
+						: undefined,
+					linked_cards: (y.linked_cards ?? []).map((lc) => ({
+						id: lc.id,
+						name: lc.name,
+						type: lc.type as CardType,
+						description: lc.description ?? undefined,
+						external_link: lc.external_link ?? undefined,
+						header_img: lc.header_img ?? undefined,
+						price: lc.price ?? undefined,
+						start_date: lc.start_date ?? undefined,
+						end_date: lc.end_date ?? undefined,
+						duration: lc.duration ?? undefined,
+						x_pos: lc.x_pos ?? undefined,
+						y_pos: lc.y_pos ?? undefined,
+						deleted: lc.deleted ?? false
+					})),
+					start_date: serverBoard.start_date ?? undefined,
+					end_date: serverBoard.end_date ?? undefined
+				})),
+				start_date: serverBoard.start_date ?? undefined,
+				end_date: serverBoard.end_date ?? undefined
+			};
+			nodes = initNodes();
+			edges = initEdges();
+			saveBoard(board);
+		} catch {
+			// offline fallback
+		}
+	}
 
 	function syncEdges(): Edge[] {
 		return board.yarns.flatMap((yarn) => {
@@ -114,6 +189,7 @@
 		if (!node?.id) return;
 		board = updateCardPosition(board, node.id, node.position.x, node.position.y);
 		saveBoard(board);
+		dirty = true;
 	}
 
 	function deleteSelectedCard() {
@@ -123,14 +199,54 @@
 		nodes = nodes.filter((n) => n.id !== id);
 		selectedCardId = null;
 		saveBoard(board);
+		if (boardId) deleteCardApi(boardId, id).catch(() => {});
 	}
 
-	function handleCardSubmit(data: Omit<Card, 'id' | 'x_pos' | 'y_pos'>) {
+	async function handleCardSubmit(data: Omit<Card, 'id' | 'x_pos' | 'y_pos'>) {
 		const card = createCard(data);
 		board = addCardToBoard(board, card);
 		nodes = [...nodes, syncNode(card, false)];
 		saveBoard(board);
 		showModal = false;
+
+		if (boardId) {
+			try {
+				const created = await createCardApi(boardId, card);
+				board = board.cards.map((c) => (c.id === card.id ? { ...c, id: created.id } : c));
+				nodes = nodes.map((n) =>
+					n.id === card.id
+						? {
+								...n,
+								id: created.id,
+								data: { ...n.data, card: { ...n.data.card, id: created.id } }
+							}
+						: n
+				);
+				saveBoard(board);
+			} catch {
+				// offline fallback
+			}
+		} else {
+			try {
+				const newBoard = await createBoardApi(board.name);
+				boardId = newBoard.id;
+				localStorage.setItem('boardId', newBoard.id);
+				const created = await createCardApi(newBoard.id, card);
+				board = board.cards.map((c) => (c.id === card.id ? { ...c, id: created.id } : c));
+				nodes = nodes.map((n) =>
+					n.id === card.id
+						? {
+								...n,
+								id: created.id,
+								data: { ...n.data, card: { ...n.data.card, id: created.id } }
+							}
+						: n
+				);
+				saveBoard(board);
+			} catch {
+				// offline fallback
+			}
+		}
 	}
 
 	function findCard(id: string): Card | undefined {
@@ -144,6 +260,7 @@
 		board = addCardToYarn(board, yarn.id, otherCard);
 		edges = syncEdges();
 		saveBoard(board);
+		if (boardId) addCardToYarnApi(boardId, yarn.id, otherCard.id).catch(() => {});
 		return true;
 	}
 
@@ -199,7 +316,7 @@
 		existingYarnsForPending = [];
 	}
 
-	function handleColorSelect(color: string) {
+	async function handleColorSelect(color: string) {
 		if (!pendingConnection) return;
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
@@ -211,6 +328,21 @@
 		saveBoard(board);
 		showColorPalette = false;
 		pendingConnection = null;
+
+		if (boardId) {
+			try {
+				const created = await createYarnApi(boardId, {
+					color,
+					parent_card_id: yarn.parent_card?.id,
+					linked_card_ids: yarn.linked_cards.map((c) => c.id)
+				});
+				board = board.yarns.map((y) => (y.id === yarn.id ? { ...y, id: created.id } : y));
+				edges = syncEdges();
+				saveBoard(board);
+			} catch {
+				// offline fallback
+			}
+		}
 	}
 
 	function handleColorClose() {
@@ -237,6 +369,7 @@
 		edges = syncEdges();
 		selectedEdgeId = null;
 		saveBoard(board);
+		if (boardId) deleteYarnApi(boardId, yarnId).catch(() => {});
 	}
 
 	function isValidConnection(connection: { source: string; target: string }) {
@@ -246,7 +379,46 @@
 		if (sourceYarn && targetYarn && sourceYarn.id === targetYarn.id) return false;
 		return true;
 	}
+
+	let syncInterval: ReturnType<typeof setInterval> | undefined;
+
+	function startSync() {
+		syncInterval = setInterval(() => {
+			if (!dirty || !boardId) return;
+			const positions = board.cards
+				.filter((c) => !c.deleted)
+				.map((c) => ({ id: c.id, x_pos: c.x_pos ?? 0, y_pos: c.y_pos ?? 0 }));
+			syncPositionsApi(boardId, positions).then(() => {
+				dirty = false;
+			});
+		}, 90_000);
+	}
+
+	function syncOnClose() {
+		if (!dirty || !boardId) return;
+		const positions = board.cards
+			.filter((c) => !c.deleted)
+			.map((c) => ({ id: c.id, x_pos: c.x_pos ?? 0, y_pos: c.y_pos ?? 0 }));
+		navigator.sendBeacon(
+			`/api/boards/${boardId}/sync`,
+			new Blob([JSON.stringify({ cards: positions })], { type: 'application/json' })
+		);
+	}
+
+	$effect(() => {
+		const urlBoardId = page.url.searchParams.get('board');
+		if (urlBoardId && !boardId) {
+			boardId = urlBoardId;
+			localStorage.setItem('boardId', urlBoardId);
+		}
+		const id = boardId ?? urlBoardId;
+		if (id) loadFromServer(id);
+		startSync();
+		return () => clearInterval(syncInterval);
+	});
 </script>
+
+<svelte:window onbeforeunload={syncOnClose} />
 
 <Topbar name={board.name} startDate={board.start_date} endDate={board.end_date} />
 
