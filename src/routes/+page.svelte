@@ -1,7 +1,10 @@
 <script lang="ts">
-	import Card from '$lib/components/Card.svelte';
+	import { SvelteFlow, MiniMap, type Node, type Edge } from '@xyflow/svelte';
+	import '@xyflow/svelte/dist/style.css';
 	import Topbar from '$lib/components/Topbar.svelte';
-	import type { Board, Card as CardType } from '$lib/types';
+	import CardNode from '$lib/components/nodes/CardNode.svelte';
+	import YarnEdge from '$lib/components/edges/YarnEdge.svelte';
+	import type { Board, Card } from '$lib/types';
 
 	const defaultBoard: Board = {
 		id: crypto.randomUUID(),
@@ -32,46 +35,83 @@
 		localStorage.setItem('board', JSON.stringify(board));
 	}
 
-	let canvasEl: HTMLDivElement;
+	let nodes = $state.raw<Node[]>(
+		board.cards.map((card) => ({
+			id: card.id,
+			type: 'card',
+			position: { x: card.x_pos ?? 0, y: card.y_pos ?? 0 },
+			data: { card }
+		}))
+	);
 
-	function handleCardMove(id: string, x: number, y: number) {
-		if (!canvasEl) return;
-		const canvasRect = canvasEl.getBoundingClientRect();
-		board.cards = board.cards.map((c) =>
-			c.id === id
+	let edges = $state.raw<Edge[]>(
+		board.yarns.flatMap((yarn) =>
+			yarn.linked_cards.map((card) => ({
+				id: `${yarn.id}-${card.id}`,
+				source: yarn.parent_card?.id ?? '',
+				target: card.id,
+				type: 'yarn',
+				data: { yarn }
+			}))
+		)
+	);
+
+	const nodeTypes = {
+		card: CardNode
+	};
+
+	const edgeTypes = {
+		yarn: YarnEdge
+	};
+
+	function onNodeDragStop(event: { node: Node }) {
+		const { node } = event;
+		board.cards = board.cards.map((card) =>
+			card.id === node.id
 				? {
-						...c,
-						x_pos: x - canvasRect.left + canvasEl.scrollLeft,
-						y_pos: y - canvasRect.top + canvasEl.scrollTop
+						...card,
+						x_pos: node.position.x,
+						y_pos: node.position.y
 					}
-				: c
+				: card
 		);
-	}
-
-	function handleCardDrop() {
 		saveBoard();
 	}
 
 	function addCard() {
-		const newCard: CardType = {
+		const newCard: Card = {
 			id: crypto.randomUUID(),
 			name: `Card ${board.cards.length + 1}`,
 			x_pos: Math.random() * 400 + 100,
 			y_pos: Math.random() * 300 + 100
 		};
 		board.cards = [...board.cards, newCard];
+		nodes = [
+			...nodes,
+			{
+				id: newCard.id,
+				type: 'card',
+				position: { x: newCard.x_pos ?? 0, y: newCard.y_pos ?? 0 },
+				data: { card: newCard }
+			}
+		];
 		saveBoard();
 	}
 </script>
 
 <Topbar name={board.name} startDate={board.start_date} endDate={board.end_date} />
 
-<div class="canvas" bind:this={canvasEl}>
-	<div class="canvas-inner">
-		{#each board.cards as card (card.id)}
-			<Card {card} onmove={(x, y) => handleCardMove(card.id, x, y)} ondrop={handleCardDrop} />
-		{/each}
-	</div>
+<div class="canvas">
+	<SvelteFlow
+		bind:nodes
+		bind:edges
+		{nodeTypes}
+		{edgeTypes}
+		on:nodedragstop={onNodeDragStop}
+		fitView
+	>
+		<MiniMap />
+	</SvelteFlow>
 	<button class="add-btn" onclick={addCard}>+</button>
 </div>
 
@@ -80,19 +120,7 @@
 		width: 100vw;
 		height: 100vh;
 		padding-top: 48px;
-		overflow: auto;
 		background: #e8e0d8;
-		background-image:
-			linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-		background-size: 40px 40px;
-		position: relative;
-	}
-
-	.canvas-inner {
-		position: relative;
-		min-width: 2000px;
-		min-height: 2000px;
 	}
 
 	.add-btn {
@@ -109,6 +137,7 @@
 		font-weight: bold;
 		color: #1a1a1a;
 		transition: all 0.1s ease;
+		z-index: 10;
 	}
 
 	.add-btn:active {

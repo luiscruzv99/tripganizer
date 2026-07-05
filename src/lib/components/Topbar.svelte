@@ -1,22 +1,14 @@
 <script lang="ts">
 	let { name, startDate, endDate }: { name: string; startDate?: string; endDate?: string } =
 		$props();
+
+	let dateRange = $derived([startDate, endDate].filter(Boolean).join(' - '));
 </script>
 
 <div class="topbar">
 	<h1 class="topbar-name">{name}</h1>
-	{#if startDate || endDate}
-		<div class="topbar-dates">
-			{#if startDate}
-				<span>{startDate}</span>
-			{/if}
-			{#if startDate && endDate}
-				<span class="topbar-separator">-</span>
-			{/if}
-			{#if endDate}
-				<span>{endDate}</span>
-			{/if}
-		</div>
+	{#if dateRange}
+		<div class="topbar-dates">{dateRange}</div>
 	{/if}
 </div>
 
@@ -49,9 +41,5 @@
 		font-family: monospace;
 		font-size: 13px;
 		opacity: 0.8;
-	}
-
-	.topbar-separator {
-		margin: 0 6px;
 	}
 </style>

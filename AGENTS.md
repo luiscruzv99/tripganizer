@@ -22,6 +22,16 @@ The coding style for this app must be minimalistic and simplistic, prefering to 
 functions, rather than conveluted syntax. All while keeping documentation comments to a minimum, and
 leveraging the power of typescript for the typechecking.
 
+## Verifying code
+
+You must always verify your code by running the linting and
+formatting tools, as well as the fallow tool by doing `npx fallow`,
+the quality gates must be: A score (93 or higher), and less
+than 0.8% duplications in the code you write. Also you must
+verify your changes visually by using the playwright mcp.
+Always assume the dev server is running in port 5173, and if not prompt
+the user to start it.
+
 ## Commiting style
 
 Commits must be authored frequently and must be as atomic as possible. Code must always be developed

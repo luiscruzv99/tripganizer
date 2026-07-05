@@ -23,5 +23,5 @@ just save to localStorage.
 
 ## Task 3 - Migrate to svelte flow library
 
-Migrate the current canvas implementation to make use of 
+Migrate the current canvas implementation to make use of
 the free version of svelteflow, while preserving the aesthetic. Make also sure to implement any changes to the data model.

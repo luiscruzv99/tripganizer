@@ -20,5 +20,8 @@ export default defineConfig({
 				})
 			}
 		})
-	]
+	],
+	optimizeDeps: {
+		include: ['@xyflow/svelte', '@xyflow/system']
+	}
 });
