@@ -11,10 +11,10 @@
 		onClose: () => void;
 	} = $props();
 
-	let name = $state(board.name);
-	let description = $state(board.description ?? '');
-	let startDate = $state(board.start_date ?? '');
-	let endDate = $state(board.end_date ?? '');
+	let name = $derived(board.name);
+	let description = $derived(board.description ?? '');
+	let startDate = $derived(board.start_date ?? '');
+	let endDate = $derived(board.end_date ?? '');
 	let loading = $state(false);
 
 	function handleSubmit(e: SubmitEvent) {

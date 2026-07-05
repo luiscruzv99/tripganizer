@@ -17,7 +17,7 @@
 				<div class="stamp-inner"></div>
 			</div>
 			<div class="card-content">
-				<CardBody {card} />
+				<CardBody {card} onExpand={() => data.onExpand?.()} />
 			</div>
 		</div>
 	</div>
@@ -43,7 +43,7 @@
 				<div class="tear-notch"></div>
 			</div>
 			<div class="card-content">
-				<CardBody {card} />
+				<CardBody {card} onExpand={() => data.onExpand?.()} />
 			</div>
 		</div>
 	</div>
@@ -53,7 +53,7 @@
 		<div class="card-shape receipt">
 			<div class="receipt-notch"></div>
 			<div class="card-content">
-				<CardBody {card} />
+				<CardBody {card} onExpand={() => data.onExpand?.()} />
 			</div>
 		</div>
 	</div>
@@ -65,7 +65,7 @@
 				<div class="tag-string"></div>
 			</div>
 			<div class="card-content">
-				<CardBody {card} />
+				<CardBody {card} onExpand={() => data.onExpand?.()} />
 			</div>
 		</div>
 	</div>
@@ -100,6 +100,8 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		width: 100%;
+		overflow: hidden;
 	}
 
 	/* Postcard */

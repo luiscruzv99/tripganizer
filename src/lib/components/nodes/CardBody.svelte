@@ -1,7 +1,13 @@
 <script lang="ts">
 	import type { Card, CardType } from '$lib/types';
 
-	let { card }: { card: Card } = $props();
+	let {
+		card,
+		onExpand
+	}: {
+		card: Card;
+		onExpand?: () => void;
+	} = $props();
 
 	const typeColors: Record<CardType, string> = {
 		DEST: '#d4e5f7',
@@ -45,10 +51,24 @@
 
 <div class="card-inner">
 	<div class="card-header" style="background: {headerColor}; border-bottom-color: {borderColor};">
+		{#if onExpand}
+			<button class="expand-btn nodrag" onclick={onExpand} title="Expand details">⤢</button>
+		{/if}
 		<div class="header-row">
 			<span class="card-icon">{icon}</span>
 			<span class="card-name">{card.name}</span>
 		</div>
+		{#if card.external_link}
+			<a
+				href={card.external_link}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="external-link-icon nodrag"
+				title="Open link"
+			>
+				↗
+			</a>
+		{/if}
 	</div>
 
 	{#if card.header_img}
@@ -84,6 +104,8 @@
 		flex-direction: column;
 		height: 100%;
 		padding-bottom: 16px;
+		overflow: hidden;
+		max-width: 100%;
 	}
 
 	.card-header {
@@ -93,7 +115,43 @@
 		border-bottom: 1px solid #e8e4df;
 		display: flex;
 		align-items: center;
-		padding: 8px 12px;
+		padding: 8px 36px;
+		overflow: hidden;
+		min-width: 0;
+	}
+
+	.expand-btn {
+		position: absolute;
+		top: 8px;
+		left: 8px;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #fff;
+		border: 1px solid #1a1a1a;
+		color: #1a1a1a;
+		cursor: pointer;
+		padding: 0;
+		font-size: 14px;
+		font-weight: bold;
+		font-family: monospace;
+		z-index: 10;
+		box-shadow: 1px 1px 0px 0px #1a1a1a;
+		transition: transform 0.1s;
+		pointer-events: all;
+	}
+
+	.expand-btn:hover {
+		background: #f5f0eb;
+		transform: translate(-1px, -1px);
+		box-shadow: 2px 2px 0px 0px #1a1a1a;
+	}
+
+	.expand-btn:active {
+		transform: translate(0, 0);
+		box-shadow: 1px 1px 0px 0px #1a1a1a;
 	}
 
 	.header-row {
@@ -101,6 +159,7 @@
 		align-items: center;
 		gap: 6px;
 		width: 100%;
+		min-width: 0;
 	}
 
 	.card-icon {
@@ -116,6 +175,8 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		min-width: 0;
+		flex: 1;
 	}
 
 	.banner-wrap {
@@ -129,7 +190,9 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		object-position: center;
 		display: block;
+		max-width: 100%;
 	}
 
 	.desc-wrap {
@@ -155,6 +218,39 @@
 		align-items: flex-end;
 		padding: 8px 12px;
 		margin-top: auto;
+	}
+
+	.external-link-icon {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #fff;
+		border: 1px solid #1a1a1a;
+		color: #1a1a1a;
+		text-decoration: none;
+		font-size: 12px;
+		font-weight: bold;
+		font-family: monospace;
+		z-index: 10;
+		box-shadow: 1px 1px 0px 0px #1a1a1a;
+		transition: transform 0.1s;
+		pointer-events: all;
+	}
+
+	.external-link-icon:hover {
+		background: #f5f0eb;
+		transform: translate(-1px, -1px);
+		box-shadow: 2px 2px 0px 0px #1a1a1a;
+	}
+
+	.external-link-icon:active {
+		transform: translate(0, 0);
+		box-shadow: 1px 1px 0px 0px #1a1a1a;
 	}
 
 	.footer-right {
