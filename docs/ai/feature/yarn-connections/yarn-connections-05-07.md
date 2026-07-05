@@ -21,6 +21,7 @@ Modal popup component displaying 8 predefined pastel yarn colors (terracotta, sa
 **`src/lib/board.ts`**
 
 Added yarn CRUD functions:
+
 - `createYarn(sourceCard, targetCard, color)` — Creates a Yarn object. If source is a Transport card, it becomes `parent_card`; otherwise both cards go into `linked_cards`
 - `addYarnToBoard(board, yarn)` — Appends a yarn to the board
 - `addCardToYarn(board, yarnId, card)` — Extends an existing yarn with a new card (prevents duplicates)
@@ -34,6 +35,7 @@ Imported and rendered `PinHandle` inside all four card type shapes (DEST, TRANS,
 **`src/routes/+page.svelte`**
 
 Added connection handling logic:
+
 - `handleConnect` — SvelteFlow `onconnect` callback. If either card is already in a yarn, extends that yarn. Otherwise shows the color palette for new yarn creation
 - `extendExistingYarn` — Adds a card to an existing yarn if not already present
 - `findCard` — Helper to look up a card by ID

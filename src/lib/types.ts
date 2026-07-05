@@ -18,6 +18,7 @@ export interface Card {
 
 export interface Board {
 	id: string;
+	short_code: string;
 	name: string;
 	description?: string;
 	created_date: string;
