@@ -1,4 +1,4 @@
-import type { Board, Card } from '$lib/types';
+import type { Board, Card, Yarn } from '$lib/types';
 
 const defaultCards: Card[] = [
 	{ id: '1', name: 'Card 1', type: 'DEST', x_pos: 100, y_pos: 100 },
@@ -61,4 +61,39 @@ export function updateCardPosition(board: Board, id: string, x: number, y: numbe
 		...board,
 		cards: board.cards.map((c) => (c.id === id ? { ...c, x_pos: x, y_pos: y } : c))
 	};
+}
+
+export function createYarn(sourceCard: Card, targetCard: Card, color: string): Yarn {
+	const isTransport = sourceCard.type === 'TRANS';
+	return {
+		id: crypto.randomUUID(),
+		color,
+		parent_card: isTransport ? sourceCard : undefined,
+		linked_cards: isTransport ? [targetCard] : [sourceCard, targetCard]
+	};
+}
+
+export function addYarnToBoard(board: Board, yarn: Yarn): Board {
+	return { ...board, yarns: [...board.yarns, yarn] };
+}
+
+export function addCardToYarn(board: Board, yarnId: string, card: Card): Board {
+	return {
+		...board,
+		yarns: board.yarns.map((y) => {
+			if (y.id !== yarnId) return y;
+			if (y.linked_cards.some((c) => c.id === card.id)) return y;
+			return { ...y, linked_cards: [...y.linked_cards, card] };
+		})
+	};
+}
+
+export function removeYarnFromBoard(board: Board, yarnId: string): Board {
+	return { ...board, yarns: board.yarns.filter((y) => y.id !== yarnId) };
+}
+
+export function findYarnForCard(board: Board, cardId: string): Yarn | undefined {
+	return board.yarns.find(
+		(y) => y.linked_cards.some((c) => c.id === cardId) || y.parent_card?.id === cardId
+	);
 }

@@ -2,6 +2,7 @@
 	import type { NodeProps } from '@xyflow/svelte';
 	import type { Card } from '$lib/types';
 	import CardBody from './CardBody.svelte';
+	import PinHandle from './PinHandle.svelte';
 
 	let { data }: NodeProps = $props();
 	let card: Card = $derived(data.card as Card);
@@ -10,6 +11,7 @@
 
 {#if card.type === 'DEST'}
 	<div class="card-node" class:selected>
+		<PinHandle />
 		<div class="card-shape postcard">
 			<div class="postcard-stamp">
 				<div class="stamp-inner"></div>
@@ -21,6 +23,7 @@
 	</div>
 {:else if card.type === 'TRANS'}
 	<div class="card-node" class:selected>
+		<PinHandle />
 		<div class="card-shape boarding-pass">
 			<div class="bp-stub">
 				<span class="stub-label">BOARDING PASS</span>
@@ -46,6 +49,7 @@
 	</div>
 {:else if card.type === 'ACT'}
 	<div class="card-node" class:selected>
+		<PinHandle />
 		<div class="card-shape receipt">
 			<div class="receipt-notch"></div>
 			<div class="card-content">
@@ -55,6 +59,7 @@
 	</div>
 {:else}
 	<div class="card-node" class:selected>
+		<PinHandle />
 		<div class="card-shape luggage-tag">
 			<div class="tag-hole">
 				<div class="tag-string"></div>
@@ -68,6 +73,7 @@
 
 <style>
 	.card-node {
+		position: relative;
 		filter: drop-shadow(3px 4px 0px rgba(0, 0, 0, 0.35));
 		cursor: grab;
 		user-select: none;
