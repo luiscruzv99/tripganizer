@@ -48,7 +48,8 @@
 					source: sourceId,
 					target: card.id,
 					type: 'yarn' as const,
-					data: { yarn }
+					data: { yarn },
+					zIndex: 1000
 				}));
 		});
 	}
@@ -74,7 +75,8 @@
 					source: sourceId,
 					target: card.id,
 					type: 'yarn' as const,
-					data: { yarn }
+					data: { yarn },
+					zIndex: 1000
 				}));
 		});
 	}

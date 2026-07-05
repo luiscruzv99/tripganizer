@@ -7,22 +7,23 @@
 
 <style>
 	:global(.pin-handle) {
-		width: 12px;
-		height: 12px;
-		background: radial-gradient(circle at 40% 40%, #d4a843, #8b6914);
-		border: 1px solid #5a4a1a;
+		width: 10px;
+		height: 10px;
+		background: #1a1a1a;
+		border: 2px solid #faf8f5;
 		border-radius: 50%;
-		filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+		box-shadow: 1px 2px 0px 0px rgba(0, 0, 0, 0.25);
 		cursor: crosshair;
 		transition:
 			transform 0.1s ease,
-			filter 0.1s ease;
+			box-shadow 0.1s ease;
 		z-index: 10;
+		top: 18px;
 	}
 
 	:global(.pin-handle:hover) {
 		transform: scale(1.3);
-		filter: drop-shadow(0 1px 4px rgba(180, 150, 60, 0.5));
+		box-shadow: 1px 2px 4px 0px rgba(0, 0, 0, 0.35);
 	}
 
 	:global(.pin-handle.connecting) {
@@ -33,11 +34,11 @@
 		0%,
 		100% {
 			transform: scale(1);
-			filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+			box-shadow: 1px 2px 0px 0px rgba(0, 0, 0, 0.25);
 		}
 		50% {
 			transform: scale(1.4);
-			filter: drop-shadow(0 1px 6px rgba(180, 150, 60, 0.6));
+			box-shadow: 1px 2px 6px 0px rgba(0, 0, 0, 0.4);
 		}
 	}
 </style>

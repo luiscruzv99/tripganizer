@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BaseEdge, getBezierPath, type EdgeProps } from '@xyflow/svelte';
+	import { BaseEdge, getStraightPath, type EdgeProps } from '@xyflow/svelte';
 	import type { Yarn } from '$lib/types';
 
 	let { id, sourceX, sourceY, targetX, targetY, data }: EdgeProps = $props();
@@ -8,7 +8,7 @@
 	let color = $derived(yarn?.color ?? '#1a1a1a');
 
 	let [edgePath, labelX, labelY] = $derived(
-		getBezierPath({
+		getStraightPath({
 			sourceX,
 			sourceY,
 			targetX,
