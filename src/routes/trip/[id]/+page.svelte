@@ -73,8 +73,8 @@
 		});
 	}
 
-	let nodes = $state<Node[]>(initNodes());
-	let edges = $state<Edge[]>(initEdges());
+	let nodes = $state.raw<Node[]>(initNodes());
+	let edges = $state.raw<Edge[]>(initEdges());
 
 	let showSelector = $state(false);
 	let showModal = $state(false);
@@ -87,6 +87,8 @@
 	let selectedEdgeId = $state<string | null>(null);
 	let showShareModal = $state(false);
 	let showEditModal = $state(false);
+
+	let ogImage = 'https://tripganization.ai/og-default.png';
 
 	async function loadFromServer(id: string) {
 		try {
@@ -170,17 +172,25 @@
 
 	function syncEdges(): Edge[] {
 		return board.yarns.flatMap((yarn) => {
-			const sourceId = yarn.parent_card?.id ?? yarn.linked_cards[0]?.id ?? '';
-			return yarn.linked_cards
-				.filter((card) => card.id !== sourceId)
-				.map((card) => ({
-					id: `${yarn.id}-${card.id}`,
-					source: sourceId,
-					target: card.id,
+			const seq = [
+				...(yarn.parent_card ? [yarn.parent_card] : []),
+				...yarn.linked_cards.filter((c) => c.id !== yarn.parent_card?.id)
+			];
+
+			const edges: Edge[] = [];
+			for (let i = 0; i < seq.length - 1; i++) {
+				const source = seq[i];
+				const target = seq[i + 1];
+				edges.push({
+					id: `${yarn.id}|${source.id}|${target.id}`,
+					source: source.id,
+					target: target.id,
 					type: 'yarn' as const,
 					data: { yarn },
 					zIndex: 1000
-				}));
+				});
+			}
+			return edges;
 		});
 	}
 
@@ -236,7 +246,10 @@
 		if (boardId) {
 			try {
 				const created = await createCardApi(boardId, card);
-				board = board.cards.map((c) => (c.id === card.id ? { ...c, id: created.id } : c));
+				board = {
+					...board,
+					cards: board.cards.map((c) => (c.id === card.id ? { ...c, id: created.id } : c))
+				};
 				nodes = nodes.map((n) =>
 					n.id === card.id
 						? {
@@ -360,7 +373,10 @@
 					parent_card_id: yarn.parent_card?.id,
 					linked_card_ids: yarn.linked_cards.map((c) => c.id)
 				});
-				board = board.yarns.map((y) => (y.id === yarn.id ? { ...y, id: created.id } : y));
+				board = {
+					...board,
+					yarns: board.yarns.map((y) => (y.id === yarn.id ? { ...y, id: created.id } : y))
+				};
 				edges = syncEdges();
 				saveBoard(board);
 			} catch {
@@ -379,21 +395,34 @@
 		const event = args[0];
 		const edge = event?.edge ?? event;
 		if (!edge?.id) return;
-		selectedEdgeId = selectedEdgeId === edge.id ? null : edge.id;
+		console.log('Edge clicked:', edge.id);
+		const next = selectedEdgeId === edge.id ? null : edge.id;
+		selectedEdgeId = next;
 	}
 
 	function deleteSelectedEdge() {
-		if (!selectedEdgeId) return;
+		if (!selectedEdgeId) {
+			console.log('No edge selected');
+			return;
+		}
 		const edge = edges.find((e) => e.id === selectedEdgeId);
-		if (!edge) return;
-		const yarnId = edge.id.split('-')[0];
+		if (!edge) {
+			console.log('Edge not found in edges array');
+			return;
+		}
+		const yarnId = edge.id.split('|')[0];
+		console.log('Deleting yarn:', yarnId);
 		const yarn = board.yarns.find((y) => y.id === yarnId);
-		if (!yarn) return;
+		if (!yarn) {
+			console.log('Yarn not found in board');
+			return;
+		}
 		board = removeYarnFromBoard(board, yarnId);
 		edges = syncEdges();
 		selectedEdgeId = null;
 		saveBoard(board);
-		if (boardId) deleteYarnApi(boardId, yarnId).catch(() => {});
+		if (boardId)
+			deleteYarnApi(boardId, yarnId).catch((e) => console.error('API delete failed:', e));
 	}
 
 	function isValidConnection(connection: { source: string; target: string }) {
@@ -437,6 +466,23 @@
 </script>
 
 <svelte:window onbeforeunload={syncOnClose} />
+
+<svelte:head>
+	<title>{board.name}</title>
+	<meta property="og:title" content={board.name} />
+	<meta
+		property="og:description"
+		content={board.description ?? 'A trip organized with Tripganization'}
+	/>
+	<meta property="og:image" content={ogImage} />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={board.name} />
+	<meta
+		name="twitter:description"
+		content={board.description ?? 'A trip organized with Tripganization'}
+	/>
+	<meta name="twitter:image" content={ogImage} />
+</svelte:head>
 
 <Topbar
 	name={board.name}
