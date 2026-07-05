@@ -3,6 +3,9 @@
 	import { createBoardApi } from '$lib/api';
 
 	let name = $state('');
+	let description = $state('');
+	let startDate = $state('');
+	let endDate = $state('');
 	let loading = $state(false);
 
 	async function handleSubmit(e: SubmitEvent) {
@@ -10,7 +13,12 @@
 		if (!name.trim() || loading) return;
 		loading = true;
 		try {
-			const board = await createBoardApi(name.trim());
+			const board = await createBoardApi({
+				name: name.trim(),
+				description: description.trim() || undefined,
+				start_date: startDate || undefined,
+				end_date: endDate || undefined
+			});
 			localStorage.setItem('boardId', board.id);
 			goto(`/trip/${board.id}`);
 		} catch {
@@ -23,10 +31,35 @@
 	<div class="form-card">
 		<h1 class="title">New trip</h1>
 		<form onsubmit={handleSubmit}>
-			<label class="field">
-				<span class="label">Trip name</span>
-				<input class="input" type="text" placeholder="e.g. Japan 2026" bind:value={name} required />
-			</label>
+			<div class="fields-container">
+				<label class="field">
+					<span class="label">Trip name</span>
+					<input
+						class="input"
+						type="text"
+						placeholder="e.g. Japan 2026"
+						bind:value={name}
+						required
+					/>
+				</label>
+				<label class="field">
+					<span class="label">Description</span>
+					<textarea
+						class="input textarea"
+						placeholder="Describe your trip..."
+						bind:value={description}></textarea>
+				</label>
+				<div class="row">
+					<label class="field half">
+						<span class="label">Start date</span>
+						<input class="input" type="date" bind:value={startDate} />
+					</label>
+					<label class="field half">
+						<span class="label">End date</span>
+						<input class="input" type="date" bind:value={endDate} />
+					</label>
+				</div>
+			</div>
 			<div class="actions">
 				<a class="back" href="/">Back</a>
 				<button class="submit" type="submit" disabled={!name.trim() || loading}>
@@ -47,7 +80,7 @@
 	}
 
 	.form-card {
-		width: 360px;
+		width: 400px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
 		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
@@ -62,10 +95,25 @@
 		margin: 0 0 24px 0;
 	}
 
+	.fields-container {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
 	.field {
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
+	}
+
+	.row {
+		display: flex;
+		gap: 16px;
+	}
+
+	.half {
+		flex: 1;
 	}
 
 	.label {
@@ -85,6 +133,11 @@
 		font-size: 14px;
 		color: #1a1a1a;
 		outline: none;
+	}
+
+	.textarea {
+		min-height: 80px;
+		resize: vertical;
 	}
 
 	.input:focus {

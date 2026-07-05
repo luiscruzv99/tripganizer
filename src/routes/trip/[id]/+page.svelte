@@ -4,6 +4,7 @@
 	import Topbar from '$lib/components/Topbar.svelte';
 	import CardTypeSelector from '$lib/components/CardTypeSelector.svelte';
 	import CardFormModal from '$lib/components/CardFormModal.svelte';
+	import EditBoardModal from '$lib/components/EditBoardModal.svelte';
 	import ShareModal from '$lib/components/ShareModal.svelte';
 	import {
 		loadBoard,
@@ -26,7 +27,8 @@
 		createYarnApi,
 		deleteYarnApi,
 		addCardToYarnApi,
-		syncPositionsApi
+		syncPositionsApi,
+		updateBoardApi
 	} from '$lib/api';
 	import type { Card, CardType } from '$lib/types';
 	import CardNode from '$lib/components/nodes/CardNode.svelte';
@@ -84,12 +86,14 @@
 	let existingYarnsForPending = $state<Yarn[]>([]);
 	let selectedEdgeId = $state<string | null>(null);
 	let showShareModal = $state(false);
+	let showEditModal = $state(false);
 
 	async function loadFromServer(id: string) {
 		try {
 			const serverBoard = await fetchBoard(id);
 			board = {
 				id: serverBoard.id,
+				short_code: serverBoard.short_code,
 				name: serverBoard.name,
 				description: serverBoard.description ?? undefined,
 				created_date: serverBoard.created_date,
@@ -142,6 +146,26 @@
 		} catch {
 			// offline fallback
 		}
+	}
+
+	async function handleEditSubmit(data: Partial<Board>) {
+		if (!boardId) return;
+		try {
+			await updateBoardApi(boardId, data);
+			board = { ...board, ...data };
+			saveBoard(board);
+			showEditModal = false;
+		} catch {
+			// handle error
+		}
+	}
+
+	function onShare() {
+		showShareModal = true;
+	}
+
+	function onEdit() {
+		showEditModal = true;
 	}
 
 	function syncEdges(): Edge[] {
@@ -414,7 +438,13 @@
 
 <svelte:window onbeforeunload={syncOnClose} />
 
-<Topbar name={board.name} startDate={board.start_date} endDate={board.end_date} />
+<Topbar
+	name={board.name}
+	startDate={board.start_date}
+	endDate={board.end_date}
+	{onEdit}
+	{onShare}
+/>
 
 <div class="canvas">
 	<SvelteFlow
@@ -430,7 +460,7 @@
 		connectionMode="loose"
 		fitView
 	>
-		<MiniMap />
+		<MiniMap position="bottom-left" />
 	</SvelteFlow>
 	{#if selectedCardId}
 		<button class="delete-btn" onclick={deleteSelectedCard}>×</button>
@@ -467,9 +497,11 @@
 	{#if showColorPalette}
 		<YarnColorPalette onSelect={handleColorSelect} onClose={handleColorClose} />
 	{/if}
-	<button class="share-btn" onclick={() => (showShareModal = true)}>Share</button>
 	{#if showShareModal}
 		<ShareModal shortCode={board.short_code} onClose={() => (showShareModal = false)} />
+	{/if}
+	{#if showEditModal}
+		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)} />
 	{/if}
 </div>
 
@@ -481,29 +513,8 @@
 		background: #e8e0d8;
 	}
 
-	.share-btn {
-		position: fixed;
-		bottom: 24px;
-		left: 24px;
-		padding: 10px 16px;
-		background: #faf8f5;
-		border: 2px solid #1a1a1a;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-		font-family: monospace;
-		font-size: 13px;
-		font-weight: bold;
-		color: #1a1a1a;
-		transition: all 0.1s ease;
-		z-index: 10;
-	}
-
-	.share-btn:active {
-		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
-		transform: translate(1px, 1px);
-	}
-
 	.add-btn {
+		position: fixed;
 		position: fixed;
 		bottom: 24px;
 		right: 24px;

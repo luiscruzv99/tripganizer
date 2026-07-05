@@ -1,15 +1,32 @@
 <script lang="ts">
-	let { name, startDate, endDate }: { name: string; startDate?: string; endDate?: string } =
-		$props();
+	let {
+		name,
+		startDate,
+		endDate,
+		onEdit,
+		onShare
+	}: {
+		name: string;
+		startDate?: string;
+		endDate?: string;
+		onEdit: () => void;
+		onShare: () => void;
+	} = $props();
 
 	let dateRange = $derived([startDate, endDate].filter(Boolean).join(' - '));
 </script>
 
 <div class="topbar">
 	<h1 class="topbar-name">{name}</h1>
-	{#if dateRange}
-		<div class="topbar-dates">{dateRange}</div>
-	{/if}
+	<div class="topbar-right">
+		{#if dateRange}
+			<div class="topbar-dates">{dateRange}</div>
+		{/if}
+		<div class="topbar-actions">
+			<button class="action-btn" onclick={onEdit} title="Edit trip"> Edit </button>
+			<button class="action-btn" onclick={onShare} title="Share trip"> Share </button>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -37,9 +54,37 @@
 		margin: 0;
 	}
 
+	.topbar-right {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
 	.topbar-dates {
 		font-family: monospace;
 		font-size: 13px;
 		opacity: 0.8;
+	}
+
+	.topbar-actions {
+		display: flex;
+		gap: 8px;
+	}
+
+	.action-btn {
+		padding: 4px 8px;
+		background: #faf8f5;
+		border: 2px solid #1a1a1a;
+		cursor: pointer;
+		font-family: monospace;
+		font-size: 11px;
+		font-weight: bold;
+		color: #1a1a1a;
+		transition: all 0.1s ease;
+	}
+
+	.action-btn:active {
+		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+		transform: translate(1px, 1px);
 	}
 </style>

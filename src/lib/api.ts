@@ -13,10 +13,15 @@ export async function fetchBoard(id: string): Promise<Board> {
 	return api<Board>(`/api/boards/${id}`);
 }
 
-export async function createBoardApi(name: string): Promise<Board> {
+export async function createBoardApi(data: {
+	name: string;
+	description?: string;
+	start_date?: string;
+	end_date?: string;
+}): Promise<Board> {
 	return api<Board>('/api/boards', {
 		method: 'POST',
-		body: JSON.stringify({ name })
+		body: JSON.stringify(data)
 	});
 }
 
@@ -82,5 +87,15 @@ export async function syncPositionsApi(
 	await api(`/api/boards/${boardId}/sync`, {
 		method: 'POST',
 		body: JSON.stringify({ cards })
+	});
+}
+
+export async function updateBoardApi(
+	boardId: string,
+	data: { name?: string; description?: string; start_date?: string; end_date?: string }
+): Promise<void> {
+	await api(`/api/boards/${boardId}`, {
+		method: 'PATCH',
+		body: JSON.stringify(data)
 	});
 }

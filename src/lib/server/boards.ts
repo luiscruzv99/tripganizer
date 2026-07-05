@@ -16,7 +16,10 @@ function generateShortCode(): string {
 	return code;
 }
 
-export async function createBoard(d1: D1Database, name: string) {
+export async function createBoard(
+	d1: D1Database,
+	data: { name: string; description?: string; start_date?: string; end_date?: string }
+) {
 	const db = getDb(d1);
 	const id = crypto.randomUUID();
 	const shortCode = generateShortCode();
@@ -25,11 +28,11 @@ export async function createBoard(d1: D1Database, name: string) {
 	await db.insert(boardTable).values({
 		id,
 		short_code: shortCode,
-		name,
+		...data,
 		created_date: createdDate
 	});
 
-	return { id, short_code: shortCode, name, created_date: createdDate };
+	return { id, short_code: shortCode, ...data, created_date: createdDate };
 }
 
 export async function getBoard(d1: D1Database, id: string) {
