@@ -13,6 +13,7 @@ Websites embed `<meta>` tags following the Open Graph protocol so social media p
 - `og:image` — preview image URL
 
 These live in the `<head>` of the HTML as:
+
 ```html
 <meta property="og:title" content="..." />
 <meta property="og:description" content="..." />
@@ -62,6 +63,7 @@ This is a SvelteKit server endpoint (runs as a CF Worker). It:
 **Parsing approach:** Use regex to find `<meta>` tags with `property` or `name` attributes matching OG and Twitter Card patterns. No external HTML parser library needed — regex is sufficient for this narrow use case on well-formed `<head>` sections.
 
 Priority order for each field:
+
 - `title`: `og:title` → `twitter:title` → `<title>` tag → `null`
 - `description`: `og:description` → `twitter:description` → `<meta name="description">` → `null`
 - `image`: `og:image` → `twitter:image` → `null`
@@ -69,6 +71,7 @@ Priority order for each field:
 For `image`, resolve relative URLs to absolute using the fetched URL's origin.
 
 **Error handling:**
+
 - Invalid or missing `url` param → 400 `{ error: "Invalid URL" }`
 - Fetch timeout or network error → 502 `{ error: "Could not fetch URL" }`
 - No OG tags found → 200 `{ title: null, description: null, image: null }` (not an error)
@@ -83,15 +86,15 @@ A client-side helper that calls the API route:
 
 ```ts
 export interface OgMetadata {
-    title: string | null;
-    description: string | null;
-    image: string | null;
+	title: string | null;
+	description: string | null;
+	image: string | null;
 }
 
 export async function fetchOgMetadata(url: string): Promise<OgMetadata> {
-    const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
-    if (!res.ok) throw new Error('Failed to fetch metadata');
-    return res.json();
+	const res = await fetch(`/api/og?url=${encodeURIComponent(url)}`);
+	if (!res.ok) throw new Error('Failed to fetch metadata');
+	return res.json();
 }
 ```
 
@@ -166,6 +169,7 @@ After the OG image is fetched, show a small preview thumbnail below the link fie
 ### Step 6 — Tests
 
 **Manual verification via Playwright:**
+
 1. Open the create card modal.
 2. Paste a URL with OG tags (e.g., `https://github.com`) into the External link field.
 3. Click "Fetch".
@@ -174,6 +178,7 @@ After the OG image is fetched, show a small preview thumbnail below the link fie
 6. Verify the card renders on the canvas with the fetched image as the banner and the description below the name.
 
 **Edge cases to test:**
+
 - URL with no OG tags → fields stay empty, no error.
 - Invalid URL → "Fetch" button doesn't appear.
 - Network error → error message shown.
@@ -186,10 +191,10 @@ After implementation, write a feature doc at `docs/ai/feature/og-metadata/og-fea
 
 ## Files to Create/Modify
 
-| File | Action | Purpose |
-|------|--------|---------|
-| `src/routes/api/og/+server.ts` | Create | OG metadata proxy endpoint |
-| `src/lib/og.ts` | Create | Client-side fetch utility |
+| File                                      | Action | Purpose                                          |
+| ----------------------------------------- | ------ | ------------------------------------------------ |
+| `src/routes/api/og/+server.ts`            | Create | OG metadata proxy endpoint                       |
+| `src/lib/og.ts`                           | Create | Client-side fetch utility                        |
 | `src/lib/components/CardFormModal.svelte` | Modify | Add Fetch button, auto-fill logic, image preview |
 
 ## Dependencies
