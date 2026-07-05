@@ -63,7 +63,8 @@
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeClick(...args: any[]) {
-		const node = (args[0]?.node ?? args[0]) as Node;
+		const event = args[0];
+		const node = event?.targetNode ?? event?.node ?? event;
 		if (!node?.id) return;
 		const next = selectedCardId === node.id ? null : node.id;
 		selectedCardId = next;
@@ -75,7 +76,8 @@
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeDragStop(...args: any[]) {
-		const node = (args[0]?.node ?? args[0]) as Node;
+		const event = args[0];
+		const node = event?.targetNode ?? event?.node ?? event;
 		if (!node?.id) return;
 		board = updateCardPosition(board, node.id, node.position.x, node.position.y);
 		saveBoard(board);

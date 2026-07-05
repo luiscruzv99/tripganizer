@@ -43,55 +43,60 @@
 	});
 </script>
 
-<div class="card-header" style="background: {headerColor}; border-bottom-color: {borderColor};">
-	{#if card.header_img}
-		<img class="header-img" src={card.header_img} alt="" />
-	{/if}
-	<div class="header-row">
-		<span class="card-icon">{icon}</span>
-		<span class="card-name">{card.name}</span>
+<div class="card-inner">
+	<div class="card-header" style="background: {headerColor}; border-bottom-color: {borderColor};">
+		<div class="header-row">
+			<span class="card-icon">{icon}</span>
+			<span class="card-name">{card.name}</span>
+		</div>
 	</div>
-</div>
-<div class="card-body">
-	{#if card.description}
-		<p class="card-description">{card.description}</p>
+
+	{#if card.header_img}
+		<div class="banner-wrap">
+			<img class="banner-img" src={card.header_img} alt="" />
+		</div>
+	{:else if card.description}
+		<div class="desc-wrap">
+			<p class="card-description">{card.description}</p>
+		</div>
 	{/if}
-	<div class="card-meta">
+
+	<div class="card-footer">
 		{#if card.price}
 			<span class="card-price">${card.price}</span>
+		{:else}
+			<span></span>
 		{/if}
-		{#if dateRange()}
-			<span class="card-dates">{dateRange()}</span>
-		{/if}
-		{#if card.duration}
-			<span class="card-duration">{card.duration}</span>
-		{/if}
+		<div class="footer-right">
+			{#if dateRange()}
+				<span class="card-dates">{dateRange()}</span>
+			{/if}
+			{#if card.duration}
+				<span class="card-duration">{card.duration}</span>
+			{/if}
+		</div>
 	</div>
 </div>
 
 <style>
+	.card-inner {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding-bottom: 16px;
+	}
+
 	.card-header {
 		position: relative;
-		min-height: 56px;
+		min-height: 48px;
 		background: #f5f0eb;
 		border-bottom: 1px solid #e8e4df;
 		display: flex;
 		align-items: center;
-		padding: 0 12px;
-		overflow: hidden;
-	}
-
-	.header-img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0.35;
+		padding: 8px 12px;
 	}
 
 	.header-row {
-		position: relative;
 		display: flex;
 		align-items: center;
 		gap: 6px;
@@ -113,22 +118,50 @@
 		white-space: nowrap;
 	}
 
-	.card-body {
-		flex: 1;
-		padding: 10px 12px;
+	.banner-wrap {
+		width: 100%;
+		height: 80px;
+		overflow: hidden;
+		border-bottom: 1px solid #e8e4df;
+	}
+
+	.banner-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.desc-wrap {
+		padding: 6px 12px;
+		border-bottom: 1px solid #e8e4df;
 	}
 
 	.card-description {
 		font-size: 11px;
 		color: #666;
-		margin: 0 0 6px 0;
+		margin: 0;
 		line-height: 1.4;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;
 	}
 
-	.card-meta {
+	.card-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		padding: 8px 12px;
+		margin-top: auto;
+	}
+
+	.footer-right {
 		display: flex;
 		flex-direction: column;
-		gap: 3px;
+		align-items: flex-end;
+		gap: 2px;
 	}
 
 	.card-price {
