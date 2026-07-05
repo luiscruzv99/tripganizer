@@ -21,6 +21,8 @@
 	import CardNode from '$lib/components/nodes/CardNode.svelte';
 	import YarnEdge from '$lib/components/edges/YarnEdge.svelte';
 	import YarnColorPalette from '$lib/components/YarnColorPalette.svelte';
+	import ConnectionMenu from '$lib/components/ConnectionMenu.svelte';
+	import type { Yarn } from '$lib/types';
 
 	const nodeTypes = { card: CardNode };
 	const edgeTypes = { yarn: YarnEdge };
@@ -62,7 +64,9 @@
 	let selectedType = $state<CardType>('DEST');
 	let selectedCardId = $state<string | null>(null);
 	let showColorPalette = $state(false);
+	let showConnectionMenu = $state(false);
 	let pendingConnection = $state<{ source: string; target: string } | null>(null);
+	let existingYarnsForPending = $state<Yarn[]>([]);
 	let selectedEdgeId = $state<string | null>(null);
 
 	function syncEdges(): Edge[] {
@@ -154,7 +158,45 @@
 		if (!sourceCard || !targetCard) return;
 
 		pendingConnection = { source: conn.source, target: conn.target };
+
+		const sourceYarn = findYarnForCard(board, conn.source);
+		const targetYarn = findYarnForCard(board, conn.target);
+		const yarns: Yarn[] = [];
+		if (sourceYarn) yarns.push(sourceYarn);
+		if (targetYarn && (!sourceYarn || targetYarn.id !== sourceYarn.id)) yarns.push(targetYarn);
+
+		if (yarns.length > 0) {
+			existingYarnsForPending = yarns;
+			showConnectionMenu = true;
+		} else {
+			showColorPalette = true;
+		}
+	}
+
+	function handleExtendYarn(yarnId: string) {
+		if (!pendingConnection) return;
+		const sourceCard = findCard(pendingConnection.source);
+		const targetCard = findCard(pendingConnection.target);
+		if (!sourceCard || !targetCard) return;
+
+		const yarn = board.yarns.find((y) => y.id === yarnId);
+		if (!yarn) return;
+
+		extendExistingYarn(sourceCard, targetCard, yarn);
+		showConnectionMenu = false;
+		pendingConnection = null;
+		existingYarnsForPending = [];
+	}
+
+	function handleNewYarnFromMenu() {
+		showConnectionMenu = false;
 		showColorPalette = true;
+	}
+
+	function handleConnectionMenuClose() {
+		showConnectionMenu = false;
+		pendingConnection = null;
+		existingYarnsForPending = [];
 	}
 
 	function handleColorSelect(color: string) {
@@ -246,6 +288,14 @@
 			cardType={selectedType}
 			onSubmit={handleCardSubmit}
 			onClose={() => (showModal = false)}
+		/>
+	{/if}
+	{#if showConnectionMenu}
+		<ConnectionMenu
+			existingYarns={existingYarnsForPending}
+			onExtend={handleExtendYarn}
+			onNewYarn={handleNewYarnFromMenu}
+			onClose={handleConnectionMenuClose}
 		/>
 	{/if}
 	{#if showColorPalette}

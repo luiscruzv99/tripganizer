@@ -14,7 +14,10 @@
 		border-radius: 50%;
 		box-shadow: 1px 2px 0px 0px rgba(0, 0, 0, 0.25);
 		cursor: crosshair;
-		z-index: 10;
 		top: 18px;
+	}
+
+	:global(.pin-handle-source) {
+		z-index: 11;
 	}
 </style>
