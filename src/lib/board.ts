@@ -82,7 +82,7 @@ export function addCardToYarn(board: Board, yarnId: string, card: Card): Board {
 		...board,
 		yarns: board.yarns.map((y) => {
 			if (y.id !== yarnId) return y;
-			if (y.linked_cards.some((c) => c.id === card.id)) return y;
+			if (y.parent_card?.id === card.id || y.linked_cards.some((c) => c.id === card.id)) return y;
 			return { ...y, linked_cards: [...y.linked_cards, card] };
 		})
 	};
