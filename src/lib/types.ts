@@ -1,6 +1,9 @@
+export type CardType = 'DEST' | 'TRANS' | 'ACT' | 'STAY';
+
 export interface Card {
 	id: string;
 	name: string;
+	type: CardType;
 	description?: string;
 	external_link?: string;
 	header_img?: string;
@@ -10,6 +13,7 @@ export interface Card {
 	duration?: string;
 	x_pos?: number;
 	y_pos?: number;
+	deleted?: boolean;
 }
 
 export interface Board {

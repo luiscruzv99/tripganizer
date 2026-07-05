@@ -11,5 +11,7 @@ created_date: date!,
 cards: card[]!,
 yarns: yarn[]!,
 start_date: date?,
-end_date: date?
+end_date: date?,
+deleted_cards: card[]!,
+deleted_yarns: yarn[]!
 }

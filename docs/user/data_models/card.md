@@ -7,6 +7,7 @@ All of the types share the same attributes
 {
 id: uuid!,
 name: string!,
+type: string!{DEST, TRANS, ACT, STAY},
 description: string?,
 external_link: string?,
 header_img: string?,
