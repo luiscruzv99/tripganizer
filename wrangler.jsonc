@@ -11,8 +11,8 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "tripganization-db",
-			"database_id": "local"
+			"database_name": "tripganizer-d1-db",
+			"database_id": "e2dca7b5-5ce8-4a8f-8ddc-cb67bc1602e5"
 		}
 	],
 	"workers_dev": true,
