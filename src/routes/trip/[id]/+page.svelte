@@ -6,6 +6,7 @@
 	import CardFormModal from '$lib/components/CardFormModal.svelte';
 	import EditBoardModal from '$lib/components/EditBoardModal.svelte';
 	import ShareModal from '$lib/components/ShareModal.svelte';
+	import CardDetailsModal from '$lib/components/CardDetailsModal.svelte';
 	import {
 		loadBoard,
 		saveBoard,
@@ -53,7 +54,16 @@
 				id: c.id,
 				type: 'card' as const,
 				position: { x: c.x_pos ?? 0, y: c.y_pos ?? 0 },
-				data: { card: c, selected: false }
+				data: {
+					card: c,
+					selected: false,
+					onExpand: () => {
+						console.log('Expand button clicked for card:', c.id);
+						selectedCardId = c.id;
+						showDetailsModal = true;
+						console.log('showDetailsModal set to true');
+					}
+				}
 			}));
 	}
 
@@ -87,6 +97,7 @@
 	let selectedEdgeId = $state<string | null>(null);
 	let showShareModal = $state(false);
 	let showEditModal = $state(false);
+	let showDetailsModal = $state(false);
 
 	let ogImage = 'https://tripganization.ai/og-default.png';
 
@@ -199,7 +210,16 @@
 			id: card.id,
 			type: 'card',
 			position: { x: card.x_pos ?? 0, y: card.y_pos ?? 0 },
-			data: { card, selected }
+			data: {
+				card,
+				selected,
+				onExpand: () => {
+					console.log('Expand button clicked for card:', card.id);
+					selectedCardId = card.id;
+					showDetailsModal = true;
+					console.log('showDetailsModal set to true');
+				}
+			}
 		};
 	}
 
@@ -548,6 +568,19 @@
 	{/if}
 	{#if showEditModal}
 		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)} />
+	{/if}
+	{#if showDetailsModal}
+		<div class="debug-modal-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,0,0,0.5); z-index: 9999;">
+			<button onclick={() => (showDetailsModal = false)}>Force Close</button>
+			<p>Modal should be here. Card found: {!!findCard(selectedCardId!)}</p>
+		</div>
+		<CardDetailsModal
+			card={findCard(selectedCardId!)!}
+			onClose={() => {
+				console.log('Closing modal');
+				showDetailsModal = false;
+			}}
+		/>
 	{/if}
 </div>
 

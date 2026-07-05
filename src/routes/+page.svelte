@@ -4,7 +4,7 @@
 
 <div class="landing">
 	<h1 class="title">Tripganization</h1>
-	<p class="subtitle">Organize your trip visually.</p>
+	<p class="subtitle">Schizo moodboarding for planning trips.</p>
 	<button class="cta" onclick={() => goto('/new-trip')}>Create a trip</button>
 </div>
 
