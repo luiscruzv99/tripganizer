@@ -1,50 +1,75 @@
 <script lang="ts">
 	import Card from '$lib/components/Card.svelte';
+	import Topbar from '$lib/components/Topbar.svelte';
+	import type { Board, Card as CardType } from '$lib/types';
 
-	interface CardData {
-		id: string;
-		x: number;
-		y: number;
+	const defaultBoard: Board = {
+		id: crypto.randomUUID(),
+		name: 'My Trip',
+		created_date: new Date().toISOString().split('T')[0],
+		cards: [
+			{ id: '1', name: 'Card 1', x_pos: 100, y_pos: 100 },
+			{ id: '2', name: 'Card 2', x_pos: 350, y_pos: 150 },
+			{ id: '3', name: 'Card 3', x_pos: 600, y_pos: 200 }
+		],
+		yarns: []
+	};
+
+	function loadBoard(): Board {
+		if (typeof window === 'undefined') return defaultBoard;
+		const raw = localStorage.getItem('board');
+		if (!raw) return defaultBoard;
+		try {
+			return JSON.parse(raw) as Board;
+		} catch {
+			return defaultBoard;
+		}
 	}
 
-	let cards: CardData[] = $state([
-		{ id: '1', x: 100, y: 100 },
-		{ id: '2', x: 350, y: 150 },
-		{ id: '3', x: 600, y: 200 }
-	]);
+	let board: Board = $state(loadBoard());
+
+	function saveBoard() {
+		localStorage.setItem('board', JSON.stringify(board));
+	}
 
 	let canvasEl: HTMLDivElement;
 
 	function handleCardMove(id: string, x: number, y: number) {
 		if (!canvasEl) return;
 		const canvasRect = canvasEl.getBoundingClientRect();
-		cards = cards.map((c) =>
+		board.cards = board.cards.map((c) =>
 			c.id === id
 				? {
 						...c,
-						x: x - canvasRect.left + canvasEl.scrollLeft,
-						y: y - canvasRect.top + canvasEl.scrollTop
+						x_pos: x - canvasRect.left + canvasEl.scrollLeft,
+						y_pos: y - canvasRect.top + canvasEl.scrollTop
 					}
 				: c
 		);
 	}
 
+	function handleCardDrop() {
+		saveBoard();
+	}
+
 	function addCard() {
-		cards = [
-			...cards,
-			{
-				id: crypto.randomUUID(),
-				x: Math.random() * 400 + 100,
-				y: Math.random() * 300 + 100
-			}
-		];
+		const newCard: CardType = {
+			id: crypto.randomUUID(),
+			name: `Card ${board.cards.length + 1}`,
+			x_pos: Math.random() * 400 + 100,
+			y_pos: Math.random() * 300 + 100
+		};
+		board.cards = [...board.cards, newCard];
+		saveBoard();
 	}
 </script>
 
+<Topbar name={board.name} startDate={board.start_date} endDate={board.end_date} />
+
 <div class="canvas" bind:this={canvasEl}>
 	<div class="canvas-inner">
-		{#each cards as card (card.id)}
-			<Card x={card.x} y={card.y} onmove={(x, y) => handleCardMove(card.id, x, y)} />
+		{#each board.cards as card (card.id)}
+			<Card {card} onmove={(x, y) => handleCardMove(card.id, x, y)} ondrop={handleCardDrop} />
 		{/each}
 	</div>
 	<button class="add-btn" onclick={addCard}>+</button>
@@ -54,6 +79,7 @@
 	.canvas {
 		width: 100vw;
 		height: 100vh;
+		padding-top: 48px;
 		overflow: auto;
 		background: #e8e0d8;
 		background-image:

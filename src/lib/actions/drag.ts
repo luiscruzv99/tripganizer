@@ -1,5 +1,6 @@
 interface DragOptions {
 	onmove?: (x: number, y: number) => void;
+	ondrop?: () => void;
 }
 
 export function draggable(node: HTMLElement, options: DragOptions = {}) {
@@ -24,6 +25,7 @@ export function draggable(node: HTMLElement, options: DragOptions = {}) {
 	}
 
 	function handleMouseup() {
+		options.ondrop?.();
 		document.removeEventListener('mousemove', handleMousemove);
 		document.removeEventListener('mouseup', handleMouseup);
 	}

@@ -1,16 +1,24 @@
 <script lang="ts">
 	import { draggable } from '$lib/actions/drag';
+	import type { Card } from '$lib/types';
 
 	let {
-		x = 0,
-		y = 0,
-		onmove
-	}: { x: number; y: number; onmove?: (x: number, y: number) => void } = $props();
+		card,
+		onmove,
+		ondrop
+	}: { card: Card; onmove?: (x: number, y: number) => void; ondrop?: () => void } = $props();
 </script>
 
-<div use:draggable={{ onmove }} class="card" style:left="{x}px" style:top="{y}px">
+<div
+	use:draggable={{ onmove, ondrop }}
+	class="card"
+	style:left="{card.x_pos}px"
+	style:top="{card.y_pos}px"
+>
 	<div class="card-content">
-		<div class="card-header"></div>
+		<div class="card-header">
+			<span class="card-name">{card.name}</span>
+		</div>
 		<div class="card-body"></div>
 	</div>
 </div>
@@ -47,6 +55,19 @@
 		height: 60px;
 		background: #f5f0eb;
 		border-bottom: 1px solid #e8e4df;
+		display: flex;
+		align-items: center;
+		padding: 0 12px;
+	}
+
+	.card-name {
+		font-family: monospace;
+		font-size: 12px;
+		font-weight: bold;
+		color: #1a1a1a;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.card-body {
