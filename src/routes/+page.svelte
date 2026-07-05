@@ -153,12 +153,6 @@
 		const targetCard = findCard(conn.target);
 		if (!sourceCard || !targetCard) return;
 
-		const existingYarn = findYarnForCard(board, conn.source) ?? findYarnForCard(board, conn.target);
-		if (existingYarn) {
-			extendExistingYarn(sourceCard, targetCard, existingYarn);
-			return;
-		}
-
 		pendingConnection = { source: conn.source, target: conn.target };
 		showColorPalette = true;
 	}
