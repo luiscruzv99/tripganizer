@@ -3,9 +3,11 @@
 
 	let {
 		card,
+		onEdit,
 		onClose
 	}: {
 		card: Card;
+		onEdit: () => void;
 		onClose: () => void;
 	} = $props();
 
@@ -84,6 +86,7 @@
 		</div>
 	</div>
 	<div class="modal-actions">
+		<button class="btn-edit" onclick={onEdit}>Edit</button>
 		<button class="btn-close" onclick={onClose}>Close</button>
 	</div>
 </div>
@@ -235,5 +238,23 @@
 	.btn-close:active {
 		transform: translate(1px, 1px);
 		box-shadow: 1px 1px 0px 0px #1a1a1a;
+	}
+
+	.btn-edit {
+		font-family: monospace;
+		font-size: 12px;
+		font-weight: bold;
+		padding: 8px 16px;
+		cursor: pointer;
+		border: 2px solid #1a1a1a;
+		background: #1a1a1a;
+		color: #faf8f5;
+		box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.2);
+		transition: all 0.1s;
+	}
+
+	.btn-edit:active {
+		transform: translate(1px, 1px);
+		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
 	}
 </style>
