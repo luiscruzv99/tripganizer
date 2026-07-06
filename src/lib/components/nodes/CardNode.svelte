@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
 	import type { NodeProps } from '@xyflow/svelte';
 	import type { Card } from '$lib/types';
 	import CardBody from './CardBody.svelte';
@@ -7,6 +8,11 @@
 	let { data }: NodeProps = $props();
 	let card: Card = $derived(data.card as Card);
 	let selected: boolean = $derived(data.selected as boolean);
+
+	const expandHandlers = getContext<Map<string, () => void>>('expandHandlers');
+	function handleExpand() {
+		expandHandlers.get(card.id)?.();
+	}
 </script>
 
 {#if card.type === 'DEST'}
@@ -17,7 +23,7 @@
 				<div class="stamp-inner"></div>
 			</div>
 			<div class="card-content">
-				<CardBody {card} onExpand={() => data.onExpand?.()} />
+				<CardBody {card} onExpand={handleExpand} />
 			</div>
 		</div>
 	</div>
@@ -43,7 +49,7 @@
 				<div class="tear-notch"></div>
 			</div>
 			<div class="card-content">
-				<CardBody {card} onExpand={() => data.onExpand?.()} />
+				<CardBody {card} onExpand={handleExpand} />
 			</div>
 		</div>
 	</div>
@@ -53,7 +59,7 @@
 		<div class="card-shape receipt">
 			<div class="receipt-notch"></div>
 			<div class="card-content">
-				<CardBody {card} onExpand={() => data.onExpand?.()} />
+				<CardBody {card} onExpand={handleExpand} />
 			</div>
 		</div>
 	</div>
@@ -65,7 +71,7 @@
 				<div class="tag-string"></div>
 			</div>
 			<div class="card-content">
-				<CardBody {card} onExpand={() => data.onExpand?.()} />
+				<CardBody {card} onExpand={handleExpand} />
 			</div>
 		</div>
 	</div>

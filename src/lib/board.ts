@@ -56,6 +56,13 @@ export function deleteCardFromBoard(board: Board, id: string): Board {
 	};
 }
 
+export function updateCard(board: Board, id: string, patch: Partial<Card>): Board {
+	return {
+		...board,
+		cards: board.cards.map((c) => (c.id === id ? { ...c, ...patch } : c))
+	};
+}
+
 export function updateCardPosition(board: Board, id: string, x: number, y: number): Board {
 	return {
 		...board,

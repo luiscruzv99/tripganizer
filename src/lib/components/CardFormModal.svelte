@@ -4,11 +4,13 @@
 
 	let {
 		cardType,
+		card,
 		onSubmit,
 		onClose
 	}: {
 		cardType: CardType;
-		onSubmit: (card: Omit<Card, 'id' | 'x_pos' | 'y_pos'>) => void;
+		card?: Card;
+		onSubmit: (data: Omit<Card, 'id' | 'x_pos' | 'y_pos'> & { id?: string }) => void;
 		onClose: () => void;
 	} = $props();
 
@@ -26,14 +28,14 @@
 		STAY: '#dcc4f7'
 	};
 
-	let name = $state('');
-	let description = $state('');
-	let externalLink = $state('');
-	let price = $state('');
-	let startDate = $state('');
-	let endDate = $state('');
-	let duration = $state('');
-	let headerImg = $state('');
+	let name = $state(card?.name ?? '');
+	let description = $state(card?.description ?? '');
+	let externalLink = $state(card?.external_link ?? '');
+	let price = $state(card?.price?.toString() ?? '');
+	let startDate = $state(card?.start_date ?? '');
+	let endDate = $state(card?.end_date ?? '');
+	let duration = $state(card?.duration ?? '');
+	let headerImg = $state(card?.header_img ?? '');
 	let fetchingOg = $state(false);
 	let ogError = $state<string | null>(null);
 	let ogSuccess = $state(false);
@@ -41,6 +43,7 @@
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		onSubmit({
+			...(card?.id ? { id: card.id } : {}),
 			name,
 			type: cardType,
 			description: description || undefined,
@@ -158,7 +161,7 @@
 		</div>
 		<div class="modal-actions">
 			<button type="button" class="btn-cancel" onclick={onClose}>Cancel</button>
-			<button type="submit" class="btn-submit">Create</button>
+			<button type="submit" class="btn-submit">{card ? 'Save' : 'Create'}</button>
 		</div>
 	</form>
 </div>

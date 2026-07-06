@@ -52,7 +52,14 @@
 <div class="card-inner">
 	<div class="card-header" style="background: {headerColor}; border-bottom-color: {borderColor};">
 		{#if onExpand}
-			<button class="expand-btn nodrag" onclick={onExpand} title="Expand details">⤢</button>
+			<button
+				class="expand-btn nodrag"
+				onclick={(e) => {
+					e.stopPropagation();
+					onExpand();
+				}}
+				title="Expand details">⤢</button
+			>
 		{/if}
 		<div class="header-row">
 			<span class="card-icon">{icon}</span>

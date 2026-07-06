@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { SvelteFlow, MiniMap, type Node, type Edge } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
+	import { setContext } from 'svelte';
 	import Topbar from '$lib/components/Topbar.svelte';
 	import CardTypeSelector from '$lib/components/CardTypeSelector.svelte';
 	import CardFormModal from '$lib/components/CardFormModal.svelte';
@@ -13,6 +14,7 @@
 		createCard,
 		addCardToBoard,
 		deleteCardFromBoard,
+		updateCard,
 		updateCardPosition,
 		createYarn,
 		addYarnToBoard,
@@ -24,6 +26,7 @@
 		fetchBoard,
 		createBoardApi,
 		createCardApi,
+		updateCardApi,
 		deleteCardApi,
 		createYarnApi,
 		deleteYarnApi,
@@ -43,6 +46,11 @@
 	const nodeTypes = { card: CardNode };
 	const edgeTypes = { yarn: YarnEdge };
 
+	const expandHandlers = $state<Map<string, () => void>>(new Map());
+	setContext('expandHandlers', expandHandlers);
+
+	let suppressNodeClick = false;
+
 	let board = $state(loadBoard());
 	let boardId = $state<string | null>(params.id);
 	let dirty = $state(false);
@@ -50,21 +58,23 @@
 	function initNodes(): Node[] {
 		return board.cards
 			.filter((c) => !c.deleted)
-			.map((c) => ({
-				id: c.id,
-				type: 'card' as const,
-				position: { x: c.x_pos ?? 0, y: c.y_pos ?? 0 },
-				data: {
-					card: c,
-					selected: false,
-					onExpand: () => {
-						console.log('Expand button clicked for card:', c.id);
-						selectedCardId = c.id;
-						showDetailsModal = true;
-						console.log('showDetailsModal set to true');
+			.map((c) => {
+				expandHandlers.set(c.id, () => {
+					suppressNodeClick = true;
+					selectedCardId = c.id;
+					showDetailsModal = true;
+					setTimeout(() => (suppressNodeClick = false), 0);
+				});
+				return {
+					id: c.id,
+					type: 'card' as const,
+					position: { x: c.x_pos ?? 0, y: c.y_pos ?? 0 },
+					data: {
+						card: c,
+						selected: false
 					}
-				}
-			}));
+				};
+			});
 	}
 
 	function initEdges(): Edge[] {
@@ -98,6 +108,7 @@
 	let showShareModal = $state(false);
 	let showEditModal = $state(false);
 	let showDetailsModal = $state(false);
+	let editingCard = $state<Card | null>(null);
 
 	let ogImage = 'https://tripganization.ai/og-default.png';
 
@@ -206,25 +217,26 @@
 	}
 
 	function syncNode(card: Card, selected: boolean): Node {
+		expandHandlers.set(card.id, () => {
+			suppressNodeClick = true;
+			selectedCardId = card.id;
+			showDetailsModal = true;
+			setTimeout(() => (suppressNodeClick = false), 0);
+		});
 		return {
 			id: card.id,
 			type: 'card',
 			position: { x: card.x_pos ?? 0, y: card.y_pos ?? 0 },
 			data: {
 				card,
-				selected,
-				onExpand: () => {
-					console.log('Expand button clicked for card:', card.id);
-					selectedCardId = card.id;
-					showDetailsModal = true;
-					console.log('showDetailsModal set to true');
-				}
+				selected
 			}
 		};
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeClick(...args: any[]) {
+		if (suppressNodeClick) return;
 		const event = args[0];
 		const node = event?.targetNode ?? event?.node ?? event;
 		if (!node?.id) return;
@@ -308,6 +320,19 @@
 
 	function findCard(id: string): Card | undefined {
 		return board.cards.find((c) => c.id === id);
+	}
+
+	function handleEditCardSubmit(data: Omit<Card, 'id' | 'x_pos' | 'y_pos'> & { id?: string }) {
+		if (!data.id) return;
+		const patch = { ...data, id: undefined };
+		board = updateCard(board, data.id, patch);
+		nodes = nodes.map((n) =>
+			n.id === data.id ? { ...n, data: { ...n.data, card: { ...n.data.card, ...patch } } } : n
+		);
+		saveBoard(board);
+		showModal = false;
+		editingCard = null;
+		if (boardId) updateCardApi(boardId, data.id, patch).catch(() => {});
 	}
 
 	function extendExistingYarn(sourceCard: Card, targetCard: Card, yarn: Yarn): boolean {
@@ -548,8 +573,12 @@
 	{#if showModal}
 		<CardFormModal
 			cardType={selectedType}
-			onSubmit={handleCardSubmit}
-			onClose={() => (showModal = false)}
+			card={editingCard ?? undefined}
+			onSubmit={editingCard ? handleEditCardSubmit : handleCardSubmit}
+			onClose={() => {
+				showModal = false;
+				editingCard = null;
+			}}
 		/>
 	{/if}
 	{#if showConnectionMenu}
@@ -570,14 +599,15 @@
 		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)} />
 	{/if}
 	{#if showDetailsModal}
-		<div class="debug-modal-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,0,0,0.5); z-index: 9999;">
-			<button onclick={() => (showDetailsModal = false)}>Force Close</button>
-			<p>Modal should be here. Card found: {!!findCard(selectedCardId!)}</p>
-		</div>
 		<CardDetailsModal
 			card={findCard(selectedCardId!)!}
+			onEdit={() => {
+				editingCard = findCard(selectedCardId!)!;
+				selectedType = editingCard.type;
+				showDetailsModal = false;
+				showModal = true;
+			}}
 			onClose={() => {
-				console.log('Closing modal');
 				showDetailsModal = false;
 			}}
 		/>
