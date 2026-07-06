@@ -81,7 +81,10 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		width: 400px;
+		width: calc(100vw - 32px);
+		max-width: 400px;
+		max-height: 85vh;
+		overflow-y: auto;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
 		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);

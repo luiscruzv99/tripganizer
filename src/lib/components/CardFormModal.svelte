@@ -180,7 +180,8 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		z-index: 201;
-		width: 380px;
+		width: calc(100vw - 32px);
+		max-width: 380px;
 		max-height: 85vh;
 		overflow-y: auto;
 		background: #faf8f5;
