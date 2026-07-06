@@ -9,7 +9,6 @@
 	import ShareModal from '$lib/components/ShareModal.svelte';
 	import CardDetailsModal from '$lib/components/CardDetailsModal.svelte';
 	import {
-		loadBoard,
 		saveBoard,
 		createCard,
 		addCardToBoard,
@@ -34,14 +33,14 @@
 		syncPositionsApi,
 		updateBoardApi
 	} from '$lib/api';
-	import type { Card, CardType } from '$lib/types';
+	import type { Card, CardType, Board } from '$lib/types';
 	import CardNode from '$lib/components/nodes/CardNode.svelte';
 	import YarnEdge from '$lib/components/edges/YarnEdge.svelte';
 	import YarnColorPalette from '$lib/components/YarnColorPalette.svelte';
 	import ConnectionMenu from '$lib/components/ConnectionMenu.svelte';
 	import type { Yarn } from '$lib/types';
 
-	let { params } = $props();
+	let { data, params } = $props();
 
 	const nodeTypes = { card: CardNode };
 	const edgeTypes = { yarn: YarnEdge };
@@ -51,7 +50,17 @@
 
 	let suppressNodeClick = false;
 
-	let board = $state(loadBoard());
+	let board = $state<Board>({
+		id: data.board.id,
+		short_code: data.board.short_code,
+		name: data.board.name,
+		description: data.board.description,
+		created_date: data.board.created_date,
+		start_date: data.board.start_date,
+		end_date: data.board.end_date,
+		cards: [],
+		yarns: []
+	});
 	let boardId = $state<string | null>(params.id);
 	let dirty = $state(false);
 
@@ -110,7 +119,7 @@
 	let showDetailsModal = $state(false);
 	let editingCard = $state<Card | null>(null);
 
-	let ogImage = 'https://tripganization.ai/og-default.png';
+	let ogImage = '/og-default.svg';
 
 	async function loadFromServer(id: string) {
 		try {
@@ -607,9 +616,7 @@
 				showDetailsModal = false;
 				showModal = true;
 			}}
-			onClose={() => {
-				showDetailsModal = false;
-			}}
+			onClose={() => (showDetailsModal = false)}
 		/>
 	{/if}
 </div>
@@ -618,12 +625,11 @@
 	.canvas {
 		width: 100vw;
 		height: 100vh;
-		padding-top: 48px;
+		padding-top: calc(48px + env(safe-area-inset-top, 0px));
 		background: #e8e0d8;
 	}
 
 	.add-btn {
-		position: fixed;
 		position: fixed;
 		bottom: 24px;
 		right: 24px;
@@ -697,5 +703,29 @@
 	.delete-edge-btn:active {
 		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
 		transform: translate(2px, 2px);
+	}
+
+	@media (max-width: 480px) {
+		.add-btn {
+			bottom: 16px;
+			right: 16px;
+			width: 44px;
+			height: 44px;
+			font-size: 22px;
+		}
+
+		.delete-btn {
+			bottom: 68px;
+			right: 16px;
+			width: 44px;
+			height: 44px;
+		}
+
+		.delete-edge-btn {
+			bottom: 120px;
+			right: 16px;
+			padding: 8px 12px;
+			font-size: 10px;
+		}
 	}
 </style>

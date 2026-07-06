@@ -44,6 +44,7 @@
 		background: #1a1a1a;
 		color: #faf8f5;
 		box-shadow: 0 4px 0px 0px rgba(0, 0, 0, 0.3);
+		padding-top: env(safe-area-inset-top, 0px);
 	}
 
 	.topbar-name {
@@ -52,12 +53,18 @@
 		font-weight: bold;
 		letter-spacing: 0.5px;
 		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		min-width: 0;
+		flex: 1;
 	}
 
 	.topbar-right {
 		display: flex;
 		align-items: center;
 		gap: 16px;
+		flex-shrink: 0;
 	}
 
 	.topbar-dates {
@@ -86,5 +93,31 @@
 	.action-btn:active {
 		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
 		transform: translate(1px, 1px);
+	}
+
+	@media (max-width: 480px) {
+		.topbar {
+			padding: 0 12px;
+			padding-top: env(safe-area-inset-top, 0px);
+			height: 44px;
+		}
+
+		.topbar-name {
+			font-size: 14px;
+		}
+
+		.topbar-right {
+			gap: 8px;
+		}
+
+		.topbar-dates {
+			font-size: 11px;
+			display: none;
+		}
+
+		.action-btn {
+			padding: 3px 6px;
+			font-size: 10px;
+		}
 	}
 </style>

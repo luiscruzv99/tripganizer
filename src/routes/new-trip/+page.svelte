@@ -27,6 +27,17 @@
 	}
 </script>
 
+<svelte:head>
+	<title>New trip — Tripganization</title>
+	<meta property="og:title" content="New trip — Tripganization" />
+	<meta property="og:description" content="Create a new trip on Tripganization." />
+	<meta property="og:image" content="/og-default.svg" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="New trip — Tripganization" />
+	<meta name="twitter:description" content="Create a new trip on Tripganization." />
+	<meta name="twitter:image" content="/og-default.svg" />
+</svelte:head>
+
 <div class="page">
 	<div class="form-card">
 		<h1 class="title">New trip</h1>
@@ -75,12 +86,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: 100vh;
+		min-height: 100vh;
+		min-height: 100dvh;
 		background: #e8e0d8;
+		padding: 24px 16px;
 	}
 
 	.form-card {
-		width: 400px;
+		width: 100%;
+		max-width: 400px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
 		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
@@ -164,6 +178,7 @@
 
 	.submit {
 		padding: 10px 20px;
+		min-height: 44px;
 		background: #1a1a1a;
 		border: 2px solid #1a1a1a;
 		cursor: pointer;
@@ -182,5 +197,16 @@
 	.submit:not(:disabled):active {
 		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
 		transform: translate(1px, 1px);
+	}
+
+	@media (max-width: 480px) {
+		.form-card {
+			padding: 24px;
+		}
+
+		.row {
+			flex-direction: column;
+			gap: 16px;
+		}
 	}
 </style>

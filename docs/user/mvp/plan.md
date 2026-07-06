@@ -56,3 +56,13 @@ directionality. A yarn can be created directly from a transport
 card (which will be the parent card), and used to link several
 other cards, except the parent card. Also, a yarn can be
 created by linking two cards together. Make a plan on how to implement this feature.
+
+## Task 7 - Responsive design
+
+The frontend must be responsive and very easy to use
+in mobile devices, such as smartphones and tablets. Use
+playwright to identify areas for improvement and rework
+the mobile design of the web. Since were at it, add a
+title to the landing page to show in the tab name, and
+rework the og-metadata of the pages so that it shows
+correctly on social media.
