@@ -18,7 +18,7 @@
 			"invocation_logs": true
 		},
 		"traces": {
-			"enabled": false,
+			"enabled": true,
 			"persist": true,
 			"head_sampling_rate": 1
 		}
@@ -30,6 +30,9 @@
 			"database_id": "e2dca7b5-5ce8-4a8f-8ddc-cb67bc1602e5"
 		}
 	],
+	"analytics_engine_datasets": [
+  		{ "binding": "ANALYTICS_TRIPGANIZER", "dataset": "analytics_tripganizer" }
+  	],	
 	"workers_dev": true,
 	"preview_urls": true
 }
