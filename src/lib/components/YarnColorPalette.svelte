@@ -3,10 +3,11 @@
 		onSelect,
 		onClose
 	}: {
-		onSelect: (color: string) => void;
+		onSelect: (color: string, label: string|undefined) => void;
 		onClose: () => void;
 	} = $props();
 
+	
 	const colors = [
 		{ color: '#e07a5f', label: 'Terracotta' },
 		{ color: '#81b29a', label: 'Sage' },
@@ -17,10 +18,14 @@
 		{ color: '#b5838d', label: 'Mauve' },
 		{ color: '#6d6875', label: 'Stone' }
 	];
+	let color = $state(colors[0]);
+	let label = $state(undefined);
 </script>
 
 <div class="backdrop" onclick={onClose} role="presentation"></div>
 <div class="palette">
+	<span class="palette-label">LABEL (optional)</span>
+	<input bind:value={label} placeholder="something..." type="text">
 	<span class="palette-label">YARN COLOR</span>
 	<div class="swatches">
 		{#each colors as c (c.color)}
@@ -28,10 +33,11 @@
 				class="swatch"
 				style="background: {c.color};"
 				title={c.label}
-				onclick={() => onSelect(c.color)}
+				onclick={() => color = c}
 			></button>
 		{/each}
 	</div>
+	<button onclick={() => onSelect(color.color, label)}>Create yarn</button>
 </div>
 
 <style>

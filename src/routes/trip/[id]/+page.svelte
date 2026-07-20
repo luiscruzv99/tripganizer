@@ -243,7 +243,6 @@
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeClick(...args: any[]) {
 		if (suppressNodeClick) return;
 		const event = args[0];
@@ -257,7 +256,6 @@
 		}));
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeDragStop(...args: any[]) {
 		const event = args[0];
 		const node = event?.targetNode ?? event?.node ?? event;
@@ -355,7 +353,6 @@
 		return true;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function handleConnect(...args: any[]) {
 		const conn = args[0];
 		edges = edges.filter((e) => e.source !== conn.source || e.target !== conn.target);
@@ -407,13 +404,13 @@
 		existingYarnsForPending = [];
 	}
 
-	async function handleColorSelect(color: string) {
+	async function handleColorSelect(color: string, label: string|undefined) {
 		if (!pendingConnection) return;
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
 		if (!sourceCard || !targetCard) return;
 
-		const yarn = createYarn(sourceCard, targetCard, color);
+		const yarn = createYarn(sourceCard, targetCard, color, label);
 		board = addYarnToBoard(board, yarn);
 		edges = syncEdges();
 		saveBoard(board);
@@ -444,7 +441,6 @@
 		pendingConnection = null;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function handleEdgeClick(...args: any[]) {
 		const event = args[0];
 		const edge = event?.edge ?? event;

@@ -70,11 +70,12 @@ export function updateCardPosition(board: Board, id: string, x: number, y: numbe
 	};
 }
 
-export function createYarn(sourceCard: Card, targetCard: Card, color: string): Yarn {
+export function createYarn(sourceCard: Card, targetCard: Card, color: string, label: string|undefined): Yarn {
 	const isTransport = sourceCard.type === 'TRANS';
 	return {
 		id: crypto.randomUUID(),
 		color,
+		free_field: label,
 		parent_card: isTransport ? sourceCard : undefined,
 		linked_cards: isTransport ? [targetCard] : [sourceCard, targetCard]
 	};
