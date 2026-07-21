@@ -39,6 +39,8 @@
 	import YarnColorPalette from '$lib/components/YarnColorPalette.svelte';
 	import ConnectionMenu from '$lib/components/ConnectionMenu.svelte';
 	import type { Yarn } from '$lib/types';
+	import { fade } from 'svelte/transition';
+	import { duration } from 'drizzle-orm/gel-core';
 
 	let { data, params } = $props();
 
@@ -601,7 +603,7 @@
 		<ShareModal shortCode={board.short_code} onClose={() => (showShareModal = false)} />
 	{/if}
 	{#if showEditModal}
-		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)} />
+		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)}/>
 	{/if}
 	{#if showDetailsModal}
 		<CardDetailsModal

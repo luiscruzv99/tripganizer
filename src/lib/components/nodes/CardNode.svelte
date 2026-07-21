@@ -80,19 +80,18 @@
 <style>
 	.card-node {
 		position: relative;
-		filter: drop-shadow(3px 4px 0px rgba(0, 0, 0, 0.35));
+		filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 0.6));
 		cursor: grab;
 		user-select: none;
 	}
 
 	.card-node:active {
 		cursor: grabbing;
-		filter: drop-shadow(4px 6px 0px rgba(0, 0, 0, 0.4));
+		filter: drop-shadow(10px 10px 0px rgba(0, 0, 0, 0.8));
 	}
 
 	.card-node.selected {
-		filter: drop-shadow(0px 0px 2px rgba(26, 26, 26, 0.8))
-			drop-shadow(3px 4px 0px rgba(0, 0, 0, 0.35));
+		filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 1));
 	}
 
 	.card-shape {

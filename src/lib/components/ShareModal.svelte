@@ -54,7 +54,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.2);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -66,7 +66,7 @@
 		max-width: 400px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
 	}
 
 	.header {
