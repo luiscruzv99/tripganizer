@@ -26,7 +26,8 @@
 		{
 			"binding": "DB",
 			"database_name": "tripganizer-d1-db",
-			"database_id": "e2dca7b5-5ce8-4a8f-8ddc-cb67bc1602e5"
+			"database_id": "e2dca7b5-5ce8-4a8f-8ddc-cb67bc1602e5",
+			"migrations_dir": "./drizzle",
 		}
 	],
 	"analytics_engine_datasets": [
