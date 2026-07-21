@@ -72,7 +72,7 @@
 				</div>
 			</div>
 			<div class="actions">
-				<a class="back" href="/">Back</a>
+				<a class="back" href="/">&lt; Back</a>
 				<button class="submit" type="submit" disabled={!name.trim() || loading}>
 					{loading ? 'Creating...' : 'Create'}
 				</button>
@@ -166,32 +166,50 @@
 	}
 
 	.back {
+		margin-top: 16px;
+		padding: 12px 24px;
+		min-height: 44px;
+		background: #faf8f5;
+		border: 2px solid #1a1a1a;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
+		cursor: pointer;
 		font-family: monospace;
-		font-size: 13px;
-		color: #666;
-		text-decoration: none;
+		font-size: 14px;
+		font-weight: bold;
+		color: #1a1a1a;
+		transition: all 0.1s ease;
 	}
 
 	.back:hover {
 		color: #1a1a1a;
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.submit {
-		padding: 10px 20px;
-		min-height: 44px;
 		background: #1a1a1a;
-		border: 2px solid #1a1a1a;
+		border: 3px solid #1a1a1a;
 		cursor: pointer;
 		font-family: monospace;
-		font-size: 13px;
 		font-weight: bold;
 		color: #faf8f5;
+		margin-top: 16px;
+		padding: 12px 24px;
+		min-height: 44px;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
+		font-size: 14px;
 		transition: all 0.1s ease;
 	}
 
 	.submit:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
+		pointer-events: none;
+	}
+
+	.submit:hover{
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.submit:not(:disabled):active {

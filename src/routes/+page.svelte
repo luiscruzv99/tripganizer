@@ -58,7 +58,7 @@
 		min-height: 44px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-family: monospace;
 		font-size: 14px;
@@ -68,12 +68,12 @@
 	}
 
 	.cta:active {
-		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.7);
 		transform: translate(2px, 2px);
 	}
 
 	.cta:hover{
-		transform: translate(-10px, -10px);
-		box-shadow: 13px 13px 0px 0px rgba(0, 0, 0, 0.2);
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 </style>

@@ -633,7 +633,7 @@
 		height: 48px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-size: 24px;
 		font-weight: bold;
@@ -643,8 +643,13 @@
 	}
 
 	.add-btn:active {
-		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.7);
 		transform: translate(2px, 2px);
+	}
+
+	.add-btn:hover{
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.delete-btn {
@@ -655,7 +660,7 @@
 		height: 48px;
 		background: #faf8f5;
 		border: 2px solid #c44;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-size: 20px;
 		font-weight: bold;
@@ -667,6 +672,8 @@
 	.delete-btn:hover {
 		background: #c44;
 		color: #faf8f5;
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.delete-btn:active {
@@ -681,7 +688,7 @@
 		padding: 10px 16px;
 		background: #faf8f5;
 		border: 2px solid #c44;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-family: monospace;
 		font-size: 11px;
@@ -694,6 +701,8 @@
 	.delete-edge-btn:hover {
 		background: #c44;
 		color: #faf8f5;
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.delete-edge-btn:active {
