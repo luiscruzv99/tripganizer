@@ -25,19 +25,28 @@
 <div class="backdrop" onclick={onClose} role="presentation"></div>
 <div class="palette">
 	<span class="palette-label">LABEL (optional)</span>
-	<input bind:value={label} placeholder="something..." type="text">
+	<input bind:value={label} placeholder="something..." type="text" class="input">
 	<span class="palette-label">YARN COLOR</span>
 	<div class="swatches">
 		{#each colors as c (c.color)}
+			{#if color.color == c.color}
+			<button
+				class="swatch active"
+				style="background: {c.color};"
+				title={c.label}
+				onclick={() => color = c}
+			></button>
+			{:else}
 			<button
 				class="swatch"
 				style="background: {c.color};"
 				title={c.label}
 				onclick={() => color = c}
 			></button>
+			{/if}
 		{/each}
 	</div>
-	<button onclick={() => onSelect(color.color, label)}>Create yarn</button>
+	<button class="add-btn" onclick={() => onSelect(color.color, label)}>Create yarn</button>
 </div>
 
 <style>
@@ -95,7 +104,46 @@
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 	}
 
-	.swatch:active {
-		transform: scale(1.1);
+	.active {
+		transform: scale(1.35);
+	}
+
+	.input {
+		padding: 10px 12px;
+		border: 2px solid #1a1a1a;
+		background: #fff;
+		font-family: monospace;
+		font-size: 14px;
+		color: #1a1a1a;
+		outline: none;
+	}
+
+	.input:focus {
+		box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.15);
+	}
+	
+	.add-btn{
+		margin-top: 16px;
+		padding: 12px 24px;
+		min-height: 44px;
+		background: #faf8f5;
+		border: 2px solid #1a1a1a;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
+		cursor: pointer;
+		font-family: monospace;
+		font-size: 14px;
+		font-weight: bold;
+		color: #1a1a1a;
+		transition: all 0.1s ease;
+	}
+
+	.add-btn:active {
+		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.7);
+		transform: translate(2px, 2px);
+	}
+
+	.add-btn:hover{
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 </style>

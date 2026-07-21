@@ -25,6 +25,9 @@
 				title="Extend this yarn"
 				onclick={() => onExtend(yarn.id)}
 			></button>
+			{#if yarn.free_field}
+				<span>{yarn.free_field}</span>
+			{/if}
 		{/each}
 		<button class="new-btn" title="New yarn" onclick={onNewYarn}>+</button>
 	</div>
