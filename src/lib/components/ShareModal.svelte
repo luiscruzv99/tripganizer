@@ -116,7 +116,7 @@
 		font-size: 11px;
 		font-weight: bold;
 		color: #666;
-		text-transform: uppercase;
+		text-transform: lowercase;
 		letter-spacing: 0.5px;
 	}
 

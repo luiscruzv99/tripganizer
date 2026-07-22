@@ -201,7 +201,7 @@
 		font-size: 10px;
 		font-weight: bold;
 		color: #888;
-		text-transform: uppercase;
+		text-transform: lowercase;
 	}
 
 	.value {

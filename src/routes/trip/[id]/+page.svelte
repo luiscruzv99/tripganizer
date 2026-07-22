@@ -520,7 +520,7 @@
 <svelte:window onbeforeunload={syncOnClose} />
 
 <svelte:head>
-	<title>{board.name}</title>
+	<title>{board.name} - Tripganization</title>
 	<meta property="og:title" content={board.name} />
 	<meta
 		property="og:description"

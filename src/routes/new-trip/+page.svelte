@@ -40,7 +40,7 @@
 
 <div class="page">
 	<div class="form-card">
-		<h1 class="title">New trip</h1>
+		<h1 class="title">new trip</h1>
 		<form onsubmit={handleSubmit}>
 			<div class="fields-container">
 				<label class="field">
@@ -97,7 +97,7 @@
 		max-width: 400px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 5px 5px 0px 0px rgba(0, 0, 0, 0.7);
 		padding: 32px;
 	}
 
@@ -135,7 +135,7 @@
 		font-size: 12px;
 		font-weight: bold;
 		color: #1a1a1a;
-		text-transform: uppercase;
+		text-transform: lowercase;
 		letter-spacing: 0.5px;
 	}
 
@@ -147,6 +147,7 @@
 		font-size: 14px;
 		color: #1a1a1a;
 		outline: none;
+		text-transform: lowercase;
 	}
 
 	.textarea {
@@ -163,6 +164,7 @@
 		justify-content: space-between;
 		align-items: center;
 		margin-top: 24px;
+		text-transform: lowercase;
 	}
 
 	.back {
@@ -199,6 +201,7 @@
 		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		font-size: 14px;
 		transition: all 0.1s ease;
+		text-transform: lowercase;
 	}
 
 	.submit:disabled {
