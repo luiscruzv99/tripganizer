@@ -204,7 +204,6 @@
 
 	.desc-wrap {
 		padding: 6px 12px;
-		border-bottom: 1px solid #e8e4df;
 	}
 
 	.card-description {

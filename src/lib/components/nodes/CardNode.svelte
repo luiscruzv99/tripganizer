@@ -25,6 +25,14 @@
 			<div class="card-content">
 				<CardBody {card} onExpand={handleExpand} />
 			</div>
+			<div class="postcard-address">
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+			</div>
 		</div>
 	</div>
 {:else if card.type === 'TRANS'}
@@ -57,7 +65,6 @@
 	<div class="card-node" class:selected>
 		<PinHandle />
 		<div class="card-shape receipt">
-			<div class="receipt-notch"></div>
 			<div class="card-content">
 				<CardBody {card} onExpand={handleExpand} />
 			</div>
@@ -97,8 +104,6 @@
 	.card-shape {
 		width: 200px;
 		background: #faf8f5;
-		outline: 2px solid #b8b0a6;
-		outline-offset: -2px;
 	}
 
 	.card-content {
@@ -111,15 +116,10 @@
 
 	/* Postcard */
 	.postcard {
-		height: 280px;
-		clip-path: polygon(
-			0 0,
-			100% 0,
-			100% calc(100% - 8px),
-			calc(100% - 4px) 100%,
-			4px 100%,
-			0 calc(100% - 8px)
-		);
+		width: 320px;
+		height: 220px;
+		display: flex;
+		flex-direction: row;
 	}
 
 	.postcard-stamp {
@@ -136,6 +136,20 @@
 		position: absolute;
 		inset: 4px;
 		border: 1px solid #ddd;
+	}
+
+	.postcard-address{
+		padding: 50px 0;
+		width: 200px;
+		background: #f5f0eb;
+		border-left: 1px solid #e8e4df;
+	}
+
+	.address-line{
+		margin: auto;
+		width: 90px;
+		height: 20px;
+		border-bottom: 1px solid #aaa;
 	}
 
 	/* Boarding Pass */
@@ -190,39 +204,9 @@
 	.receipt {
 		position: relative;
 		height: 280px;
-		clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), 0 calc(100% - 12px));
+		clip-path: polygon(100% 100%, 95% 97%, 90% 100%, 85% 97%, 80% 100%, 75% 97%, 70% 100%, 65% 97%, 60% 100%, 55% 97%, 50% 100%, 45% 97%, 40% 100%, 35% 97%, 30% 100%, 25% 97%, 20% 100%, 15% 97%, 10% 100%, 5% 97%, 0% 100%, 0% 0%, 40% 0%, 40% 5%, 60% 5%, 60% 0%, 100% 0%);
 	}
 
-	.receipt::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 12px;
-		background: linear-gradient(
-			135deg,
-			#faf8f5 33.33%,
-			transparent 33.33%,
-			transparent 66.67%,
-			#faf8f5 66.67%
-		);
-		background-size: 12px 12px;
-	}
-
-	.receipt-notch {
-		position: absolute;
-		top: -1px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 30px;
-		height: 10px;
-		background: #e8e0d8;
-		border-left: 1px solid #e8e4df;
-		border-right: 1px solid #e8e4df;
-		border-bottom: 1px solid #e8e4df;
-		z-index: 1;
-	}
 
 	/* Luggage Tag */
 	.luggage-tag {
