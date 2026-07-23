@@ -4,10 +4,10 @@
 	let { onSelect, onClose }: { onSelect: (type: CardType) => void; onClose: () => void } = $props();
 
 	const types: { type: CardType; label: string; icon: string; color: string }[] = [
-		{ type: 'DEST', label: 'Destination', icon: '📍', color: '#d4e5f7' },
-		{ type: 'TRANS', label: 'Transport', icon: '✈', color: '#f7dcc4' },
-		{ type: 'ACT', label: 'Activity', icon: '🧭', color: '#c4f7d4' },
-		{ type: 'STAY', label: 'Stay', icon: '🏠', color: '#dcc4f7' }
+		{ type: 'DEST', label: 'Destination', icon: '🗽', color: '#d4e5f7' },
+		{ type: 'TRANS', label: 'Transport', icon: '🚂', color: '#f7dcc4' },
+		{ type: 'ACT', label: 'Activity', icon: '🎟', color: '#c4f7d4' },
+		{ type: 'STAY', label: 'Stay', icon: '🛏', color: '#dcc4f7' }
 	];
 </script>
 

@@ -345,7 +345,10 @@
 	}
 
 	function extendExistingYarn(sourceCard: Card, targetCard: Card, yarn: Yarn): boolean {
-		const otherCard = sourceCard.id === yarn.parent_card?.id ? targetCard : sourceCard;
+		
+		const otherCard = (sourceCard.id === yarn.parent_card?.id || yarn.linked_cards.filter(s => s.id === sourceCard.id).length > 0) ?
+			targetCard : sourceCard
+
 		if (yarn.linked_cards.some((c) => c.id === otherCard.id)) return false;
 		if (yarn.parent_card?.id === otherCard.id) return false;
 		board = addCardToYarn(board, yarn.id, otherCard);
@@ -384,7 +387,10 @@
 		if (!pendingConnection) return;
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
-		if (!sourceCard || !targetCard) return;
+		if (!sourceCard || !targetCard) {
+			console.log(sourceCard, targetCard)
+			return;
+		}
 
 		const yarn = board.yarns.find((y) => y.id === yarnId);
 		if (!yarn) return;
@@ -424,7 +430,8 @@
 				const created = await createYarnApi(boardId, {
 					color,
 					parent_card_id: yarn.parent_card?.id,
-					linked_card_ids: yarn.linked_cards.map((c) => c.id)
+					linked_card_ids: yarn.linked_cards.map((c) => c.id),
+					free_field: yarn.free_field
 				});
 				board = {
 					...board,

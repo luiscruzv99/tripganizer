@@ -24,10 +24,10 @@
 	};
 
 	const typeIcons: Record<CardType, string> = {
-		DEST: '📍',
-		TRANS: '✈',
-		ACT: '🧭',
-		STAY: '🏠'
+		DEST: '🗽',
+		TRANS: '🚂',
+		ACT: '🎟',
+		STAY: '🛏'
 	};
 
 	let headerColor = $derived(typeColors[card.type] ?? '#f5f0eb');
