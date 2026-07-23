@@ -171,7 +171,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: 200;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.2);
 	}
 
 	.modal {
@@ -186,7 +186,7 @@
 		overflow-y: auto;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);
 	}
 
 	.modal-header {
@@ -352,6 +352,8 @@
 		padding: 10px;
 		cursor: pointer;
 		border: 2px solid #1a1a1a;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
+		transition: all 0.1s ease;
 	}
 
 	.btn-cancel {
@@ -360,7 +362,8 @@
 	}
 
 	.btn-cancel:hover {
-		background: #f5f0eb;
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
+		transform: translate(-5px, -5px);
 	}
 
 	.btn-submit {
@@ -369,7 +372,8 @@
 	}
 
 	.btn-submit:hover {
-		background: #333;
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
+		transform: translate(-5px, -5px);
 	}
 
 	.btn-submit:active,

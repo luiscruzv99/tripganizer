@@ -17,7 +17,8 @@
 	);
 </script>
 
-<BaseEdge {id} path={edgePath} style="stroke: {color}; stroke-width: 2;" />
+<BaseEdge {id} path={edgePath} style="stroke: {color}; stroke-width: 2; box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);" />
+		
 
 {#if yarn?.free_field}
 	<text x={labelX} y={labelY} class="edge-label" style="fill: {color};">

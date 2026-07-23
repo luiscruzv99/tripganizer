@@ -74,9 +74,6 @@
 	<div class="card-node" class:selected>
 		<PinHandle />
 		<div class="card-shape luggage-tag">
-			<div class="tag-hole">
-				<div class="tag-string"></div>
-			</div>
 			<div class="card-content">
 				<CardBody {card} onExpand={handleExpand} />
 			</div>
@@ -154,7 +151,7 @@
 
 	/* Boarding Pass */
 	.boarding-pass {
-		width: 280px;
+		width: 360px;
 		height: 180px;
 		display: flex;
 		flex-direction: row;
@@ -204,30 +201,22 @@
 	.receipt {
 		position: relative;
 		height: 280px;
-		clip-path: polygon(100% 100%, 95% 97%, 90% 100%, 85% 97%, 80% 100%, 75% 97%, 70% 100%, 65% 97%, 60% 100%, 55% 97%, 50% 100%, 45% 97%, 40% 100%, 35% 97%, 30% 100%, 25% 97%, 20% 100%, 15% 97%, 10% 100%, 5% 97%, 0% 100%, 0% 0%, 40% 0%, 40% 5%, 60% 5%, 60% 0%, 100% 0%);
+		clip-path: polygon(100% 100%, 98% 99%, 96% 100%, 94% 99%, 92% 100%, 90% 99%, 88% 100%,
+			86% 99%, 84% 100%, 82% 99%, 80% 100%, 78% 99%, 76% 100%,
+			74% 99%, 72% 100%, 70% 99%, 68% 100%, 66% 99%, 64% 100%, 
+			62% 99%, 60% 100%, 58% 99%, 56% 100%, 54% 99%, 52% 100%, 50% 99%,
+			48% 100%, 46% 99%, 44% 100%, 42% 99%, 40% 100%, 38% 99%, 36% 100%, 34% 99%, 
+			32% 100%, 30% 99%, 28% 100%, 26% 99%, 24% 100%, 
+			22% 99%, 20% 100%, 18% 99%, 16% 100%, 14% 99%, 
+			12% 100%, 10% 99%, 8% 100%, 6% 99%, 4% 100%,2% 99%,  
+			0% 100%, 0% 0%, 40% 0%, 40% 5%, 60% 5%, 60% 0%, 100% 0%);
 	}
 
 
 	/* Luggage Tag */
 	.luggage-tag {
 		height: 300px;
-		clip-path: polygon(
-			20px 0,
-			calc(100% - 20px) 0,
-			100% 20px,
-			100% calc(100% - 16px),
-			calc(100% - 8px) calc(100% - 4px),
-			calc(100% - 16px) calc(100% - 8px),
-			calc(100% - 24px) calc(100% - 12px),
-			calc(100% - 32px) calc(100% - 14px),
-			50% calc(100% - 16px),
-			32px calc(100% - 14px),
-			24px calc(100% - 12px),
-			16px calc(100% - 8px),
-			8px calc(100% - 4px),
-			0 calc(100% - 16px),
-			0 20px
-		);
+		/*clip-path: polygon(100% 0%, 100% 95%, 90% 100%, 10% 100%, 0% 95%, 0% 0%);*/
 	}
 
 	.tag-hole {

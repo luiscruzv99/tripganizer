@@ -87,7 +87,6 @@
 	</div>
 	<div class="modal-actions">
 		<button class="btn-edit" onclick={onEdit}>Edit</button>
-		<button class="btn-close" onclick={onClose}>Close</button>
 	</div>
 </div>
 
@@ -96,7 +95,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: 300;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.2);
 	}
 
 	.modal {
@@ -111,7 +110,7 @@
 		overflow-y: auto;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
 		display: flex;
 		flex-direction: column;
 	}
@@ -223,24 +222,6 @@
 		justify-content: flex-end;
 	}
 
-	.btn-close {
-		font-family: monospace;
-		font-size: 12px;
-		font-weight: bold;
-		padding: 8px 16px;
-		cursor: pointer;
-		border: 2px solid #1a1a1a;
-		background: #faf8f5;
-		color: #1a1a1a;
-		box-shadow: 2px 2px 0px 0px #1a1a1a;
-		transition: all 0.1s;
-	}
-
-	.btn-close:active {
-		transform: translate(1px, 1px);
-		box-shadow: 1px 1px 0px 0px #1a1a1a;
-	}
-
 	.btn-edit {
 		font-family: monospace;
 		font-size: 12px;
@@ -250,12 +231,17 @@
 		border: 2px solid #1a1a1a;
 		background: #1a1a1a;
 		color: #faf8f5;
-		box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		transition: all 0.1s;
 	}
 
 	.btn-edit:active {
 		transform: translate(1px, 1px);
 		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+	}
+
+	.btn-edit:hover{
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
+		transform: translate(-5px, -5px);
 	}
 </style>

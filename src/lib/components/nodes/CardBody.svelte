@@ -82,12 +82,12 @@
 		<div class="banner-wrap">
 			<img class="banner-img" src={card.header_img} alt="" />
 		</div>
-	{:else if card.description}
+	{/if}
+	{#if card.description}
 		<div class="desc-wrap">
 			<p class="card-description">{card.description}</p>
 		</div>
 	{/if}
-
 	<div class="card-footer">
 		{#if card.price}
 			<span class="card-price">${card.price}</span>
