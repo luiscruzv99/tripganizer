@@ -54,6 +54,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: 9;
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 
 	.palette {
@@ -64,7 +65,7 @@
 		z-index: 200;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);
 		padding: 16px 20px;
 		display: flex;
 		flex-direction: column;
