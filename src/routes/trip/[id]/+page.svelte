@@ -39,8 +39,6 @@
 	import YarnColorPalette from '$lib/components/YarnColorPalette.svelte';
 	import ConnectionMenu from '$lib/components/ConnectionMenu.svelte';
 	import type { Yarn } from '$lib/types';
-	import { fade } from 'svelte/transition';
-	import { duration } from 'drizzle-orm/gel-core';
 
 	let { data, params } = $props();
 
@@ -52,7 +50,7 @@
 
 	let suppressNodeClick = false;
 
-	let board = $state<Board>({
+	let board = $derived<Board>({
 		id: data.board.id,
 		short_code: data.board.short_code,
 		name: data.board.name,
@@ -63,7 +61,7 @@
 		cards: [],
 		yarns: []
 	});
-	let boardId = $state<string | null>(params.id);
+	let boardId = $derived<string | null>(params.id);
 	let dirty = $state(false);
 
 	function initNodes(): Node[] {
@@ -147,6 +145,7 @@
 					y_pos: c.y_pos ?? 100 + i * 100,
 					deleted: c.deleted ?? false
 				})),
+				// FIXME: Aqui hay un bug, estudiar esto
 				yarns: (serverBoard.yarns ?? []).map((y) => ({
 					id: y.id,
 					color: y.color,
