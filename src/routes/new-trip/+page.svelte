@@ -19,7 +19,6 @@
 				start_date: startDate || undefined,
 				end_date: endDate || undefined
 			});
-			localStorage.setItem('boardId', board.id);
 			goto(`/trip/${board.id}`);
 		} catch {
 			loading = false;

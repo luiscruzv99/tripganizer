@@ -218,27 +218,4 @@
 		height: 300px;
 		/*clip-path: polygon(100% 0%, 100% 95%, 90% 100%, 10% 100%, 0% 95%, 0% 0%);*/
 	}
-
-	.tag-hole {
-		position: absolute;
-		top: 8px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: #e8e0d8;
-		border: 1.5px solid #ccc;
-		z-index: 1;
-	}
-
-	.tag-string {
-		position: absolute;
-		top: -10px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 2px;
-		height: 12px;
-		background: #aaa;
-	}
 </style>

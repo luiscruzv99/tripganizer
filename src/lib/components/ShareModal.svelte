@@ -39,8 +39,8 @@
 			<button class="close" onclick={onClose}>×</button>
 		</div>
 		<div class="body">
-			<label class="label">Shareable link</label>
-			<div class="url-row">
+			<label class="label" for="share-box">Shareable link</label>
+			<div class="url-row" id="share-box">
 				<input class="url-input" type="text" readonly value={getShareUrl()} />
 				<button class="copy-btn" onclick={copyToClipboard}>
 					{copied ? 'Copied!' : 'Copy'}

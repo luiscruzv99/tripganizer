@@ -9,7 +9,6 @@
 	import ShareModal from '$lib/components/ShareModal.svelte';
 	import CardDetailsModal from '$lib/components/CardDetailsModal.svelte';
 	import {
-		saveBoard,
 		createCard,
 		addCardToBoard,
 		deleteCardFromBoard,
@@ -176,7 +175,6 @@
 			};
 			nodes = initNodes();
 			edges = initEdges();
-			saveBoard(board);
 		} catch {
 			// offline fallback
 		}
@@ -187,7 +185,6 @@
 		try {
 			await updateBoardApi(boardId, data);
 			board = { ...board, ...data };
-			saveBoard(board);
 			showEditModal = false;
 		} catch {
 			// handle error
@@ -262,7 +259,6 @@
 		const node = event?.targetNode ?? event?.node ?? event;
 		if (!node?.id) return;
 		board = updateCardPosition(board, node.id, node.position.x, node.position.y);
-		saveBoard(board);
 		dirty = true;
 	}
 
@@ -272,7 +268,6 @@
 		board = deleteCardFromBoard(board, id);
 		nodes = nodes.filter((n) => n.id !== id);
 		selectedCardId = null;
-		saveBoard(board);
 		if (boardId) deleteCardApi(boardId, id).catch(() => {});
 	}
 
@@ -280,7 +275,6 @@
 		const card = createCard(data);
 		board = addCardToBoard(board, card);
 		nodes = [...nodes, syncNode(card, false)];
-		saveBoard(board);
 		showModal = false;
 
 		if (boardId) {
@@ -299,7 +293,6 @@
 							}
 						: n
 				);
-				saveBoard(board);
 			} catch {
 				// offline fallback
 			}
@@ -307,7 +300,6 @@
 			try {
 				const newBoard = await createBoardApi(board.name);
 				boardId = newBoard.id;
-				localStorage.setItem('boardId', newBoard.id);
 				const created = await createCardApi(newBoard.id, card);
 				board = board.cards.map((c) => (c.id === card.id ? { ...c, id: created.id } : c));
 				nodes = nodes.map((n) =>
@@ -319,7 +311,6 @@
 							}
 						: n
 				);
-				saveBoard(board);
 			} catch {
 				// offline fallback
 			}
@@ -337,7 +328,6 @@
 		nodes = nodes.map((n) =>
 			n.id === data.id ? { ...n, data: { ...n.data, card: { ...n.data.card, ...patch } } } : n
 		);
-		saveBoard(board);
 		showModal = false;
 		editingCard = null;
 		if (boardId) updateCardApi(boardId, data.id, patch).catch(() => {});
@@ -352,34 +342,46 @@
 		if (yarn.parent_card?.id === otherCard.id) return false;
 		board = addCardToYarn(board, yarn.id, otherCard);
 		edges = syncEdges();
-		saveBoard(board);
 		if (boardId) addCardToYarnApi(boardId, yarn.id, otherCard.id).catch(() => {});
 		return true;
 	}
 
 	function handleConnect(...args: any[]) {
+		// Cogemos la primera conexion como la que queremos introducir
 		const conn = args[0];
-		edges = edges.filter((e) => e.source !== conn.source || e.target !== conn.target);
+		console.log(conn)
+		//Si la arista no tiene source o target o ambos son iguales, salir
 		if (!conn?.source || !conn?.target || conn.source === conn.target) return;
+		edges = edges.filter((e) => e.source !== conn.source || e.target !== conn.target);
 
 		const sourceCard = findCard(conn.source);
 		const targetCard = findCard(conn.target);
+
 		if (!sourceCard || !targetCard) return;
 
 		pendingConnection = { source: conn.source, target: conn.target };
 
-		const sourceYarn = findYarnForCard(board, conn.source);
-		const targetYarn = findYarnForCard(board, conn.target);
+		// Estos metodos solo encuentran una arista, no?
+		const sourceYarns = findYarnForCard(board, conn.source);
+		console.log("fuente",sourceYarns)
+		const targetYarns = findYarnForCard(board, conn.target);
+		console.log("destino",targetYarns)
+
 		const yarns: Yarn[] = [];
-		if (sourceYarn) yarns.push(sourceYarn);
-		if (targetYarn && (!sourceYarn || targetYarn.id !== sourceYarn.id)) yarns.push(targetYarn);
+
+		if (sourceYarns.length > 0) yarns.push(...sourceYarns);
+
+		//if (targetYarns.length > 0 && (!sourceYarns.length > 0 || targetYarns.some((c) => c.id !== sourceYarns.id)) yarns.push(targetYarn);
+		if(targetYarns.length > 0) yarns.push(...targetYarns)
 
 		if (yarns.length > 0) {
+			console.log(yarns)
 			existingYarnsForPending = yarns;
 			showConnectionMenu = true;
 		} else {
 			showColorPalette = true;
 		}
+
 	}
 
 	function handleExtendYarn(yarnId: string) {
@@ -420,7 +422,6 @@
 		const yarn = createYarn(sourceCard, targetCard, color, label);
 		board = addYarnToBoard(board, yarn);
 		edges = syncEdges();
-		saveBoard(board);
 		showColorPalette = false;
 		pendingConnection = null;
 
@@ -437,7 +438,6 @@
 					yarns: board.yarns.map((y) => (y.id === yarn.id ? { ...y, id: created.id } : y))
 				};
 				edges = syncEdges();
-				saveBoard(board);
 			} catch {
 				// offline fallback
 			}
@@ -478,7 +478,6 @@
 		board = removeYarnFromBoard(board, yarnId);
 		edges = syncEdges();
 		selectedEdgeId = null;
-		saveBoard(board);
 		if (boardId)
 			deleteYarnApi(boardId, yarnId).catch((e) => console.error('API delete failed:', e));
 	}

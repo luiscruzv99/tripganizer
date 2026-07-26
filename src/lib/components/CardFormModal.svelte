@@ -28,15 +28,15 @@
 		STAY: '#dcc4f7'
 	};
 
-	let name = $state(card?.name ?? '');
-	let description = $state(card?.description ?? '');
-	let externalLink = $state(card?.external_link ?? '');
-	let price = $state(card?.price?.toString() ?? '');
-	let startDate = $state(card?.start_date ?? '');
-	let endDate = $state(card?.end_date ?? '');
-	let duration = $state(card?.duration ?? '');
-	let headerImg = $state(card?.header_img ?? '');
-	let fetchingOg = $state(false);
+	let name = $derived(card?.name ?? '');
+	let description = $derived(card?.description ?? '');
+	let externalLink = $derived(card?.external_link ?? '');
+	let price = $derived(card?.price?.toString() ?? '');
+	let startDate = $derived(card?.start_date ?? '');
+	let endDate = $derived(card?.end_date ?? '');
+	let duration = $derived(card?.duration ?? '');
+	let headerImg = $derived(card?.header_img ?? '');
+	let fetchingOg = $derived(false);
 	let ogError = $state<string | null>(null);
 	let ogSuccess = $state(false);
 

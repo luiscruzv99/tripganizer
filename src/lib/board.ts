@@ -1,41 +1,5 @@
 import type { Board, Card, Yarn } from '$lib/types';
 
-const defaultCards: Card[] = [
-	{ id: '1', name: 'Card 1', type: 'DEST', x_pos: 100, y_pos: 100 },
-	{ id: '2', name: 'Card 2', type: 'TRANS', x_pos: 350, y_pos: 150 },
-	{ id: '3', name: 'Card 3', type: 'ACT', x_pos: 600, y_pos: 200 }
-];
-
-function emptyBoard(): Board {
-	return {
-		id: crypto.randomUUID(),
-		name: 'My Trip',
-		created_date: new Date().toISOString().split('T')[0],
-		cards: defaultCards,
-		yarns: []
-	};
-}
-
-function hydrate(raw: string | null): Board {
-	if (!raw) return emptyBoard();
-	const b = JSON.parse(raw) as Board;
-	b.cards = b.cards.map((c) => ({ ...c, type: c.type ?? 'DEST' }));
-	return b;
-}
-
-export function loadBoard(): Board {
-	if (typeof window === 'undefined') return emptyBoard();
-	try {
-		return hydrate(localStorage.getItem('board'));
-	} catch {
-		return emptyBoard();
-	}
-}
-
-export function saveBoard(board: Board) {
-	localStorage.setItem('board', JSON.stringify(board));
-}
-
 export function createCard(data: Omit<Card, 'id' | 'x_pos' | 'y_pos'>): Card {
 	return {
 		...data,
@@ -100,8 +64,10 @@ export function removeYarnFromBoard(board: Board, yarnId: string): Board {
 	return { ...board, yarns: board.yarns.filter((y) => y.id !== yarnId) };
 }
 
-export function findYarnForCard(board: Board, cardId: string): Yarn | undefined {
-	return board.yarns.find(
-		(y) => y.linked_cards.some((c) => c.id === cardId) || y.parent_card?.id === cardId
+export function findYarnForCard(board: Board, cardId: string): Yarn[]{
+	return board.yarns.filter(
+		(y) => 
+			y.linked_cards.some((c) => c.id === cardId) 
+			|| y.parent_card?.id === cardId
 	);
 }
