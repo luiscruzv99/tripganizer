@@ -18,7 +18,8 @@
 		addYarnToBoard,
 		addCardToYarn,
 		removeYarnFromBoard,
-		findYarnForCard
+		findYarnForCard,
+		checkDuplicateYarns
 	} from '$lib/board';
 	import {
 		fetchBoard,
@@ -334,9 +335,11 @@
 	}
 
 	function extendExistingYarn(sourceCard: Card, targetCard: Card, yarn: Yarn): boolean {
-		
-		const otherCard = (sourceCard.id === yarn.parent_card?.id || yarn.linked_cards.filter(s => s.id === sourceCard.id).length > 0) ?
-			targetCard : sourceCard
+		const otherCard =
+			sourceCard.id === yarn.parent_card?.id ||
+			yarn.linked_cards.filter((s) => s.id === sourceCard.id).length > 0
+				? targetCard
+				: sourceCard;
 
 		if (yarn.linked_cards.some((c) => c.id === otherCard.id)) return false;
 		if (yarn.parent_card?.id === otherCard.id) return false;
@@ -349,7 +352,6 @@
 	function handleConnect(...args: any[]) {
 		// Cogemos la primera conexion como la que queremos introducir
 		const conn = args[0];
-		console.log(conn)
 		//Si la arista no tiene source o target o ambos son iguales, salir
 		if (!conn?.source || !conn?.target || conn.source === conn.target) return;
 		edges = edges.filter((e) => e.source !== conn.source || e.target !== conn.target);
@@ -363,25 +365,24 @@
 
 		// Estos metodos solo encuentran una arista, no?
 		const sourceYarns = findYarnForCard(board, conn.source);
-		console.log("fuente",sourceYarns)
 		const targetYarns = findYarnForCard(board, conn.target);
-		console.log("destino",targetYarns)
 
 		const yarns: Yarn[] = [];
 
 		if (sourceYarns.length > 0) yarns.push(...sourceYarns);
 
-		//if (targetYarns.length > 0 && (!sourceYarns.length > 0 || targetYarns.some((c) => c.id !== sourceYarns.id)) yarns.push(targetYarn);
-		if(targetYarns.length > 0) yarns.push(...targetYarns)
+		if (
+			targetYarns.length > 0 &&
+			(!(sourceYarns.length > 0) || checkDuplicateYarns(sourceYarns, targetYarns))
+		)
+			yarns.push(...targetYarns);
 
 		if (yarns.length > 0) {
-			console.log(yarns)
 			existingYarnsForPending = yarns;
 			showConnectionMenu = true;
 		} else {
 			showColorPalette = true;
 		}
-
 	}
 
 	function handleExtendYarn(yarnId: string) {
@@ -389,7 +390,7 @@
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
 		if (!sourceCard || !targetCard) {
-			console.log(sourceCard, targetCard)
+			console.log(sourceCard, targetCard);
 			return;
 		}
 
@@ -413,7 +414,7 @@
 		existingYarnsForPending = [];
 	}
 
-	async function handleColorSelect(color: string, label: string|undefined) {
+	async function handleColorSelect(color: string, label: string | undefined) {
 		if (!pendingConnection) return;
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
@@ -483,10 +484,19 @@
 	}
 
 	function isValidConnection(connection: { source: string; target: string }) {
-		if (connection.source === connection.target) return false;
-		const sourceYarn = findYarnForCard(board, connection.source);
-		const targetYarn = findYarnForCard(board, connection.target);
-		if (sourceYarn && targetYarn && sourceYarn.id === targetYarn.id) return false;
+		if (connection.source === connection.target) {
+			return false;
+		}
+		const sourceYarns = findYarnForCard(board, connection.source);
+		const targetYarns = findYarnForCard(board, connection.target);
+		console.log(sourceYarns, targetYarns);
+		if (
+			sourceYarns.length < 0 &&
+			targetYarns.length < 0 &&
+			checkDuplicateYarns(sourceYarns, targetYarns)
+		)
+			return false;
+
 		return true;
 	}
 
@@ -608,7 +618,7 @@
 		<ShareModal shortCode={board.short_code} onClose={() => (showShareModal = false)} />
 	{/if}
 	{#if showEditModal}
-		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)}/>
+		<EditBoardModal {board} onSubmit={handleEditSubmit} onClose={() => (showEditModal = false)} />
 	{/if}
 	{#if showDetailsModal}
 		<CardDetailsModal
@@ -654,7 +664,7 @@
 		transform: translate(2px, 2px);
 	}
 
-	.add-btn:hover{
+	.add-btn:hover {
 		transform: translate(-5px, -5px);
 		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}

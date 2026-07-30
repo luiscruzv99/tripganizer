@@ -71,3 +71,8 @@ export function findYarnForCard(board: Board, cardId: string): Yarn[]{
 			|| y.parent_card?.id === cardId
 	);
 }
+
+export function checkDuplicateYarns(arr1: Yarn[], arr2: Yarn[]): boolean{
+	const set1 = new Set(arr1.map(e => e.id));
+	return arr2.some(e => set1.has(e.id));
+}
