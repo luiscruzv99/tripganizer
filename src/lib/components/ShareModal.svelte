@@ -39,8 +39,8 @@
 			<button class="close" onclick={onClose}>×</button>
 		</div>
 		<div class="body">
-			<label class="label">Shareable link</label>
-			<div class="url-row">
+			<label class="label" for="share-box">Shareable link</label>
+			<div class="url-row" id="share-box">
 				<input class="url-input" type="text" readonly value={getShareUrl()} />
 				<button class="copy-btn" onclick={copyToClipboard}>
 					{copied ? 'Copied!' : 'Copy'}
@@ -54,7 +54,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.2);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -66,7 +66,7 @@
 		max-width: 400px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
 	}
 
 	.header {
@@ -116,7 +116,7 @@
 		font-size: 11px;
 		font-weight: bold;
 		color: #666;
-		text-transform: uppercase;
+		text-transform: lowercase;
 		letter-spacing: 0.5px;
 	}
 

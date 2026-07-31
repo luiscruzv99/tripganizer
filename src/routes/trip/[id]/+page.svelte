@@ -9,7 +9,6 @@
 	import ShareModal from '$lib/components/ShareModal.svelte';
 	import CardDetailsModal from '$lib/components/CardDetailsModal.svelte';
 	import {
-		saveBoard,
 		createCard,
 		addCardToBoard,
 		deleteCardFromBoard,
@@ -19,7 +18,8 @@
 		addYarnToBoard,
 		addCardToYarn,
 		removeYarnFromBoard,
-		findYarnForCard
+		findYarnForCard,
+		checkDuplicateYarns
 	} from '$lib/board';
 	import {
 		fetchBoard,
@@ -50,7 +50,7 @@
 
 	let suppressNodeClick = false;
 
-	let board = $state<Board>({
+	let board = $derived<Board>({
 		id: data.board.id,
 		short_code: data.board.short_code,
 		name: data.board.name,
@@ -61,7 +61,7 @@
 		cards: [],
 		yarns: []
 	});
-	let boardId = $state<string | null>(params.id);
+	let boardId = $derived<string | null>(params.id);
 	let dirty = $state(false);
 
 	function initNodes(): Node[] {
@@ -145,6 +145,7 @@
 					y_pos: c.y_pos ?? 100 + i * 100,
 					deleted: c.deleted ?? false
 				})),
+				// FIXME: Aqui hay un bug, estudiar esto
 				yarns: (serverBoard.yarns ?? []).map((y) => ({
 					id: y.id,
 					color: y.color,
@@ -175,7 +176,6 @@
 			};
 			nodes = initNodes();
 			edges = initEdges();
-			saveBoard(board);
 		} catch {
 			// offline fallback
 		}
@@ -186,7 +186,6 @@
 		try {
 			await updateBoardApi(boardId, data);
 			board = { ...board, ...data };
-			saveBoard(board);
 			showEditModal = false;
 		} catch {
 			// handle error
@@ -243,7 +242,6 @@
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeClick(...args: any[]) {
 		if (suppressNodeClick) return;
 		const event = args[0];
@@ -257,13 +255,11 @@
 		}));
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function onNodeDragStop(...args: any[]) {
 		const event = args[0];
 		const node = event?.targetNode ?? event?.node ?? event;
 		if (!node?.id) return;
 		board = updateCardPosition(board, node.id, node.position.x, node.position.y);
-		saveBoard(board);
 		dirty = true;
 	}
 
@@ -273,7 +269,6 @@
 		board = deleteCardFromBoard(board, id);
 		nodes = nodes.filter((n) => n.id !== id);
 		selectedCardId = null;
-		saveBoard(board);
 		if (boardId) deleteCardApi(boardId, id).catch(() => {});
 	}
 
@@ -281,7 +276,6 @@
 		const card = createCard(data);
 		board = addCardToBoard(board, card);
 		nodes = [...nodes, syncNode(card, false)];
-		saveBoard(board);
 		showModal = false;
 
 		if (boardId) {
@@ -300,7 +294,6 @@
 							}
 						: n
 				);
-				saveBoard(board);
 			} catch {
 				// offline fallback
 			}
@@ -308,7 +301,6 @@
 			try {
 				const newBoard = await createBoardApi(board.name);
 				boardId = newBoard.id;
-				localStorage.setItem('boardId', newBoard.id);
 				const created = await createCardApi(newBoard.id, card);
 				board = board.cards.map((c) => (c.id === card.id ? { ...c, id: created.id } : c));
 				nodes = nodes.map((n) =>
@@ -320,7 +312,6 @@
 							}
 						: n
 				);
-				saveBoard(board);
 			} catch {
 				// offline fallback
 			}
@@ -338,40 +329,53 @@
 		nodes = nodes.map((n) =>
 			n.id === data.id ? { ...n, data: { ...n.data, card: { ...n.data.card, ...patch } } } : n
 		);
-		saveBoard(board);
 		showModal = false;
 		editingCard = null;
 		if (boardId) updateCardApi(boardId, data.id, patch).catch(() => {});
 	}
 
 	function extendExistingYarn(sourceCard: Card, targetCard: Card, yarn: Yarn): boolean {
-		const otherCard = sourceCard.id === yarn.parent_card?.id ? targetCard : sourceCard;
+		const otherCard =
+			sourceCard.id === yarn.parent_card?.id ||
+			yarn.linked_cards.filter((s) => s.id === sourceCard.id).length > 0
+				? targetCard
+				: sourceCard;
+
 		if (yarn.linked_cards.some((c) => c.id === otherCard.id)) return false;
 		if (yarn.parent_card?.id === otherCard.id) return false;
 		board = addCardToYarn(board, yarn.id, otherCard);
 		edges = syncEdges();
-		saveBoard(board);
 		if (boardId) addCardToYarnApi(boardId, yarn.id, otherCard.id).catch(() => {});
 		return true;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function handleConnect(...args: any[]) {
+		// Cogemos la primera conexion como la que queremos introducir
 		const conn = args[0];
-		edges = edges.filter((e) => e.source !== conn.source || e.target !== conn.target);
+		//Si la arista no tiene source o target o ambos son iguales, salir
 		if (!conn?.source || !conn?.target || conn.source === conn.target) return;
+		edges = edges.filter((e) => e.source !== conn.source || e.target !== conn.target);
 
 		const sourceCard = findCard(conn.source);
 		const targetCard = findCard(conn.target);
+
 		if (!sourceCard || !targetCard) return;
 
 		pendingConnection = { source: conn.source, target: conn.target };
 
-		const sourceYarn = findYarnForCard(board, conn.source);
-		const targetYarn = findYarnForCard(board, conn.target);
+		// Estos metodos solo encuentran una arista, no?
+		const sourceYarns = findYarnForCard(board, conn.source);
+		const targetYarns = findYarnForCard(board, conn.target);
+
 		const yarns: Yarn[] = [];
-		if (sourceYarn) yarns.push(sourceYarn);
-		if (targetYarn && (!sourceYarn || targetYarn.id !== sourceYarn.id)) yarns.push(targetYarn);
+
+		if (sourceYarns.length > 0) yarns.push(...sourceYarns);
+
+		if (
+			targetYarns.length > 0 &&
+			(!(sourceYarns.length > 0) || checkDuplicateYarns(sourceYarns, targetYarns))
+		)
+			yarns.push(...targetYarns);
 
 		if (yarns.length > 0) {
 			existingYarnsForPending = yarns;
@@ -385,7 +389,10 @@
 		if (!pendingConnection) return;
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
-		if (!sourceCard || !targetCard) return;
+		if (!sourceCard || !targetCard) {
+			console.log(sourceCard, targetCard);
+			return;
+		}
 
 		const yarn = board.yarns.find((y) => y.id === yarnId);
 		if (!yarn) return;
@@ -407,16 +414,15 @@
 		existingYarnsForPending = [];
 	}
 
-	async function handleColorSelect(color: string) {
+	async function handleColorSelect(color: string, label: string | undefined) {
 		if (!pendingConnection) return;
 		const sourceCard = findCard(pendingConnection.source);
 		const targetCard = findCard(pendingConnection.target);
 		if (!sourceCard || !targetCard) return;
 
-		const yarn = createYarn(sourceCard, targetCard, color);
+		const yarn = createYarn(sourceCard, targetCard, color, label);
 		board = addYarnToBoard(board, yarn);
 		edges = syncEdges();
-		saveBoard(board);
 		showColorPalette = false;
 		pendingConnection = null;
 
@@ -425,14 +431,14 @@
 				const created = await createYarnApi(boardId, {
 					color,
 					parent_card_id: yarn.parent_card?.id,
-					linked_card_ids: yarn.linked_cards.map((c) => c.id)
+					linked_card_ids: yarn.linked_cards.map((c) => c.id),
+					free_field: yarn.free_field
 				});
 				board = {
 					...board,
 					yarns: board.yarns.map((y) => (y.id === yarn.id ? { ...y, id: created.id } : y))
 				};
 				edges = syncEdges();
-				saveBoard(board);
 			} catch {
 				// offline fallback
 			}
@@ -444,7 +450,6 @@
 		pendingConnection = null;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	function handleEdgeClick(...args: any[]) {
 		const event = args[0];
 		const edge = event?.edge ?? event;
@@ -474,16 +479,24 @@
 		board = removeYarnFromBoard(board, yarnId);
 		edges = syncEdges();
 		selectedEdgeId = null;
-		saveBoard(board);
 		if (boardId)
 			deleteYarnApi(boardId, yarnId).catch((e) => console.error('API delete failed:', e));
 	}
 
 	function isValidConnection(connection: { source: string; target: string }) {
-		if (connection.source === connection.target) return false;
-		const sourceYarn = findYarnForCard(board, connection.source);
-		const targetYarn = findYarnForCard(board, connection.target);
-		if (sourceYarn && targetYarn && sourceYarn.id === targetYarn.id) return false;
+		if (connection.source === connection.target) {
+			return false;
+		}
+		const sourceYarns = findYarnForCard(board, connection.source);
+		const targetYarns = findYarnForCard(board, connection.target);
+		console.log(sourceYarns, targetYarns);
+		if (
+			sourceYarns.length < 0 &&
+			targetYarns.length < 0 &&
+			checkDuplicateYarns(sourceYarns, targetYarns)
+		)
+			return false;
+
 		return true;
 	}
 
@@ -522,7 +535,7 @@
 <svelte:window onbeforeunload={syncOnClose} />
 
 <svelte:head>
-	<title>{board.name}</title>
+	<title>{board.name} - Tripganization</title>
 	<meta property="og:title" content={board.name} />
 	<meta
 		property="og:description"
@@ -637,7 +650,7 @@
 		height: 48px;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-size: 24px;
 		font-weight: bold;
@@ -647,8 +660,13 @@
 	}
 
 	.add-btn:active {
-		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.7);
 		transform: translate(2px, 2px);
+	}
+
+	.add-btn:hover {
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.delete-btn {
@@ -659,7 +677,7 @@
 		height: 48px;
 		background: #faf8f5;
 		border: 2px solid #c44;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-size: 20px;
 		font-weight: bold;
@@ -671,6 +689,8 @@
 	.delete-btn:hover {
 		background: #c44;
 		color: #faf8f5;
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.delete-btn:active {
@@ -685,7 +705,7 @@
 		padding: 10px 16px;
 		background: #faf8f5;
 		border: 2px solid #c44;
-		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		cursor: pointer;
 		font-family: monospace;
 		font-size: 11px;
@@ -698,6 +718,8 @@
 	.delete-edge-btn:hover {
 		background: #c44;
 		color: #faf8f5;
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	.delete-edge-btn:active {

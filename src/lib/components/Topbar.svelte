@@ -41,9 +41,9 @@
 		justify-content: space-between;
 		height: 48px;
 		padding: 0 20px;
-		background: #1a1a1a;
+		background: #2b2b2b;
 		color: #faf8f5;
-		box-shadow: 0 4px 0px 0px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 4px 0px 0px rgba(0, 0, 0, 0.7);
 		padding-top: env(safe-area-inset-top, 0px);
 	}
 
@@ -87,12 +87,18 @@
 		font-size: 11px;
 		font-weight: bold;
 		color: #1a1a1a;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
 		transition: all 0.1s ease;
 	}
 
 	.action-btn:active {
 		box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.2);
 		transform: translate(1px, 1px);
+	}
+
+	.action-btn:hover {
+		transform: translate(-5px, -5px);
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
 	}
 
 	@media (max-width: 480px) {

@@ -25,6 +25,14 @@
 			<div class="card-content">
 				<CardBody {card} onExpand={handleExpand} />
 			</div>
+			<div class="postcard-address">
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+				<div class="address-line"></div>
+			</div>
 		</div>
 	</div>
 {:else if card.type === 'TRANS'}
@@ -57,7 +65,6 @@
 	<div class="card-node" class:selected>
 		<PinHandle />
 		<div class="card-shape receipt">
-			<div class="receipt-notch"></div>
 			<div class="card-content">
 				<CardBody {card} onExpand={handleExpand} />
 			</div>
@@ -67,9 +74,6 @@
 	<div class="card-node" class:selected>
 		<PinHandle />
 		<div class="card-shape luggage-tag">
-			<div class="tag-hole">
-				<div class="tag-string"></div>
-			</div>
 			<div class="card-content">
 				<CardBody {card} onExpand={handleExpand} />
 			</div>
@@ -80,26 +84,23 @@
 <style>
 	.card-node {
 		position: relative;
-		filter: drop-shadow(3px 4px 0px rgba(0, 0, 0, 0.35));
+		filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 0.6));
 		cursor: grab;
 		user-select: none;
 	}
 
 	.card-node:active {
 		cursor: grabbing;
-		filter: drop-shadow(4px 6px 0px rgba(0, 0, 0, 0.4));
+		filter: drop-shadow(10px 10px 0px rgba(0, 0, 0, 0.8));
 	}
 
 	.card-node.selected {
-		filter: drop-shadow(0px 0px 2px rgba(26, 26, 26, 0.8))
-			drop-shadow(3px 4px 0px rgba(0, 0, 0, 0.35));
+		filter: drop-shadow(5px 5px 0px rgba(0, 0, 0, 1));
 	}
 
 	.card-shape {
 		width: 200px;
 		background: #faf8f5;
-		outline: 2px solid #b8b0a6;
-		outline-offset: -2px;
 	}
 
 	.card-content {
@@ -112,15 +113,10 @@
 
 	/* Postcard */
 	.postcard {
-		height: 280px;
-		clip-path: polygon(
-			0 0,
-			100% 0,
-			100% calc(100% - 8px),
-			calc(100% - 4px) 100%,
-			4px 100%,
-			0 calc(100% - 8px)
-		);
+		width: 320px;
+		height: 220px;
+		display: flex;
+		flex-direction: row;
 	}
 
 	.postcard-stamp {
@@ -139,9 +135,23 @@
 		border: 1px solid #ddd;
 	}
 
+	.postcard-address{
+		padding: 50px 0;
+		width: 200px;
+		background: #f5f0eb;
+		border-left: 1px solid #e8e4df;
+	}
+
+	.address-line{
+		margin: auto;
+		width: 90px;
+		height: 20px;
+		border-bottom: 1px solid #aaa;
+	}
+
 	/* Boarding Pass */
 	.boarding-pass {
-		width: 280px;
+		width: 360px;
 		height: 180px;
 		display: flex;
 		flex-direction: row;
@@ -191,82 +201,21 @@
 	.receipt {
 		position: relative;
 		height: 280px;
-		clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), 0 calc(100% - 12px));
+		clip-path: polygon(100% 100%, 98% 99%, 96% 100%, 94% 99%, 92% 100%, 90% 99%, 88% 100%,
+			86% 99%, 84% 100%, 82% 99%, 80% 100%, 78% 99%, 76% 100%,
+			74% 99%, 72% 100%, 70% 99%, 68% 100%, 66% 99%, 64% 100%, 
+			62% 99%, 60% 100%, 58% 99%, 56% 100%, 54% 99%, 52% 100%, 50% 99%,
+			48% 100%, 46% 99%, 44% 100%, 42% 99%, 40% 100%, 38% 99%, 36% 100%, 34% 99%, 
+			32% 100%, 30% 99%, 28% 100%, 26% 99%, 24% 100%, 
+			22% 99%, 20% 100%, 18% 99%, 16% 100%, 14% 99%, 
+			12% 100%, 10% 99%, 8% 100%, 6% 99%, 4% 100%,2% 99%,  
+			0% 100%, 0% 0%, 40% 0%, 40% 5%, 60% 5%, 60% 0%, 100% 0%);
 	}
 
-	.receipt::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 12px;
-		background: linear-gradient(
-			135deg,
-			#faf8f5 33.33%,
-			transparent 33.33%,
-			transparent 66.67%,
-			#faf8f5 66.67%
-		);
-		background-size: 12px 12px;
-	}
-
-	.receipt-notch {
-		position: absolute;
-		top: -1px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 30px;
-		height: 10px;
-		background: #e8e0d8;
-		border-left: 1px solid #e8e4df;
-		border-right: 1px solid #e8e4df;
-		border-bottom: 1px solid #e8e4df;
-		z-index: 1;
-	}
 
 	/* Luggage Tag */
 	.luggage-tag {
 		height: 300px;
-		clip-path: polygon(
-			20px 0,
-			calc(100% - 20px) 0,
-			100% 20px,
-			100% calc(100% - 16px),
-			calc(100% - 8px) calc(100% - 4px),
-			calc(100% - 16px) calc(100% - 8px),
-			calc(100% - 24px) calc(100% - 12px),
-			calc(100% - 32px) calc(100% - 14px),
-			50% calc(100% - 16px),
-			32px calc(100% - 14px),
-			24px calc(100% - 12px),
-			16px calc(100% - 8px),
-			8px calc(100% - 4px),
-			0 calc(100% - 16px),
-			0 20px
-		);
-	}
-
-	.tag-hole {
-		position: absolute;
-		top: 8px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: #e8e0d8;
-		border: 1.5px solid #ccc;
-		z-index: 1;
-	}
-
-	.tag-string {
-		position: absolute;
-		top: -10px;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 2px;
-		height: 12px;
-		background: #aaa;
+		/*clip-path: polygon(100% 0%, 100% 95%, 90% 100%, 10% 100%, 0% 95%, 0% 0%);*/
 	}
 </style>

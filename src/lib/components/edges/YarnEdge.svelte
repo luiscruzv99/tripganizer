@@ -18,9 +18,8 @@
 </script>
 
 <BaseEdge {id} path={edgePath} style="stroke: {color}; stroke-width: 2;" />
-
 {#if yarn?.free_field}
-	<text x={labelX} y={labelY} class="edge-label" style="fill: {color};">
+	<text x={labelX} y={labelY-5} class="edge-label" style="fill: {color};">
 		{yarn.free_field}
 	</text>
 {/if}
@@ -28,8 +27,9 @@
 <style>
 	.edge-label {
 		font-family: monospace;
-		font-size: 10px;
+		font-size: 12px;
 		text-anchor: middle;
 		pointer-events: none;
+		z-index: 5;
 	}
 </style>

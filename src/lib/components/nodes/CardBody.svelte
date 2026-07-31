@@ -24,10 +24,10 @@
 	};
 
 	const typeIcons: Record<CardType, string> = {
-		DEST: '📍',
-		TRANS: '✈',
-		ACT: '🧭',
-		STAY: '🏠'
+		DEST: '🗽',
+		TRANS: '🚂',
+		ACT: '🎟',
+		STAY: '🛏'
 	};
 
 	let headerColor = $derived(typeColors[card.type] ?? '#f5f0eb');
@@ -82,12 +82,12 @@
 		<div class="banner-wrap">
 			<img class="banner-img" src={card.header_img} alt="" />
 		</div>
-	{:else if card.description}
+	{/if}
+	{#if card.description}
 		<div class="desc-wrap">
 			<p class="card-description">{card.description}</p>
 		</div>
 	{/if}
-
 	<div class="card-footer">
 		{#if card.price}
 			<span class="card-price">${card.price}</span>
@@ -204,7 +204,6 @@
 
 	.desc-wrap {
 		padding: 6px 12px;
-		border-bottom: 1px solid #e8e4df;
 	}
 
 	.card-description {

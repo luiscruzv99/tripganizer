@@ -7,14 +7,17 @@
 
 <style>
 	:global(.pin-handle) {
-		width: 10px;
-		height: 10px;
-		background: #1a1a1a;
-		border: 2px solid #faf8f5;
-		border-radius: 50%;
-		box-shadow: 1px 2px 0px 0px rgba(0, 0, 0, 0.25);
+		width: 17px;
+		height: 17px;
+		background: red;
+		border: 4px solid darkred;
+		border-top: 1px solid darkred;
+		border-left: 1px solid darkred;
+		border-radius: 9999%;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.8);
 		cursor: crosshair;
-		top: 18px;
+		top: 5px;
+		left: 150px;
 	}
 
 	:global(.pin-handle-source) {

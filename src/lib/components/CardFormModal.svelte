@@ -28,15 +28,15 @@
 		STAY: '#dcc4f7'
 	};
 
-	let name = $state(card?.name ?? '');
-	let description = $state(card?.description ?? '');
-	let externalLink = $state(card?.external_link ?? '');
-	let price = $state(card?.price?.toString() ?? '');
-	let startDate = $state(card?.start_date ?? '');
-	let endDate = $state(card?.end_date ?? '');
-	let duration = $state(card?.duration ?? '');
-	let headerImg = $state(card?.header_img ?? '');
-	let fetchingOg = $state(false);
+	let name = $derived(card?.name ?? '');
+	let description = $derived(card?.description ?? '');
+	let externalLink = $derived(card?.external_link ?? '');
+	let price = $derived(card?.price?.toString() ?? '');
+	let startDate = $derived(card?.start_date ?? '');
+	let endDate = $derived(card?.end_date ?? '');
+	let duration = $derived(card?.duration ?? '');
+	let headerImg = $derived(card?.header_img ?? '');
+	let fetchingOg = $derived(false);
 	let ogError = $state<string | null>(null);
 	let ogSuccess = $state(false);
 
@@ -171,7 +171,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: 200;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.2);
 	}
 
 	.modal {
@@ -186,7 +186,7 @@
 		overflow-y: auto;
 		background: #faf8f5;
 		border: 2px solid #1a1a1a;
-		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.2);
+		box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.8);
 	}
 
 	.modal-header {
@@ -242,7 +242,7 @@
 		font-size: 11px;
 		font-weight: bold;
 		color: #1a1a1a;
-		text-transform: uppercase;
+		text-transform: lowercase;
 		letter-spacing: 0.5px;
 	}
 
@@ -352,6 +352,8 @@
 		padding: 10px;
 		cursor: pointer;
 		border: 2px solid #1a1a1a;
+		box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.7);
+		transition: all 0.1s ease;
 	}
 
 	.btn-cancel {
@@ -360,7 +362,8 @@
 	}
 
 	.btn-cancel:hover {
-		background: #f5f0eb;
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
+		transform: translate(-5px, -5px);
 	}
 
 	.btn-submit {
@@ -369,7 +372,8 @@
 	}
 
 	.btn-submit:hover {
-		background: #333;
+		box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.7);
+		transform: translate(-5px, -5px);
 	}
 
 	.btn-submit:active,
