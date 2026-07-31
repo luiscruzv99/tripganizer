@@ -19,15 +19,17 @@
 	<span class="menu-label">CONNECT TO</span>
 	<div class="options">
 		{#each existingYarns as yarn (yarn.id)}
-			<button
-				class="swatch"
-				style="background: {yarn.color};"
-				title="Extend this yarn"
-				onclick={() => onExtend(yarn.id)}
-			></button>
-			{#if yarn.free_field}
-				<span>{yarn.free_field}</span>
-			{/if}
+			<div class="swatch-entry">
+				<button
+					class="swatch"
+					style="background: {yarn.color};"
+					title="Extend this yarn"
+					onclick={() => onExtend(yarn.id)}
+				></button>
+				{#if yarn.free_field}
+					<span>{yarn.free_field}</span>
+				{/if}
+			</div>
 		{/each}
 		<button class="new-btn" title="New yarn" onclick={onNewYarn}>+</button>
 	</div>
@@ -68,8 +70,14 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
-		align-items: center;
+		align-items: top;
 		justify-content: center;
+	}
+
+	.swatch-entry{
+		display:flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.swatch {
