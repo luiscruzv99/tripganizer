@@ -1,11 +1,11 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
+import { tracing } from 'cloudflare:workers';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url }) => tracing.enterSpan("Fetching OG metadata", async (span: Span) => {
 	const targetUrl = url.searchParams.get('url');
 
-	if (!targetUrl) {
+	if (!targetUrl) 
 		return json({ error: 'Missing url parameter' }, { status: 400 });
-	}
 
 	try {
 		const parsedUrl = new URL(targetUrl);
@@ -20,13 +20,14 @@ export const GET: RequestHandler = async ({ url }) => {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-		const response = await fetch(targetUrl, {
+		const response = await tracing.enterSpan("Sending fetch request", async (span) => 
+			await fetch(targetUrl, {
 			headers: {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 			},
 			signal: controller.signal
-		});
+		}));
 
 		clearTimeout(timeoutId);
 
@@ -85,4 +86,4 @@ export const GET: RequestHandler = async ({ url }) => {
 		}
 		return json({ error: 'Could not fetch URL' }, { status: 502 });
 	}
-};
+});
